@@ -5,8 +5,8 @@ import PoissonDiskSampling from "poisson-disk-sampling";
 import memoize from "memoize-one";
 import debounce from "lodash/debounce";
 import colormap from "colormap";
-import { createControls } from "./controls";
-import PARAMS from "./params";
+import { createControls } from "./_controls";
+import PARAMS from "./_params";
 import type {
   CanvasSketchSettings,
   CreateSketch,

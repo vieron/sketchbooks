@@ -1,5 +1,5 @@
 import { Pane, type TpChangeEvent } from "tweakpane";
-import type PARAMS from "./params";
+import type PARAMS from "./_params";
 
 export function createControls(
   params: typeof PARAMS,
