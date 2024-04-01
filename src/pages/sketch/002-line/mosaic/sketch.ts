@@ -155,7 +155,7 @@ function drawRect({
   };
 }
 
-const sketch: CreateSketch<typeof settings> = ({ width, height, render }) => {
+const sketch: CreateSketch<typeof settings> = ({ width, height }) => {
   //grid
   const gw = width * 1;
   const gh = height * 1;

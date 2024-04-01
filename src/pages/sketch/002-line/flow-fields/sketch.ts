@@ -34,7 +34,6 @@ const sketch: CreateSketch<typeof settings> = ({ width, height, render }) => {
 
   const cols = width / 2;
   const rows = height / 2;
-  const numCells = cols * rows;
 
   // cell
   const cw = gw / cols;

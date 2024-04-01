@@ -30,7 +30,6 @@ function createTextImage(text: string, fontSize: string) {
 
   context.font = `${fontSize} Arial Black`;
   context.fillStyle = textColor;
-  // @ts-expect-error
   context.letterSpacing = "-14px";
   context.textBaseline = "top";
   context.fillText(text, x, y);

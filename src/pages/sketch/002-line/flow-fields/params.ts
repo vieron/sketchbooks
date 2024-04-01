@@ -1,5 +1,3 @@
-import random from "canvas-sketch-util/random";
-
 const seed = 56522;
 
 export default {
