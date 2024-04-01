@@ -1,0 +1,20 @@
+---
+import Prose from "../components/Prose.astro";
+import Layout from "./Layout.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="container py-24 px-48">
+    <div class="px-48">
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+  </div>
+</Layout>

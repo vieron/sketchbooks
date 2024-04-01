@@ -10,8 +10,32 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.5.12",
     "@astrojs/check": "^0.5.10",
+    "@astrojs/mdx": "^2.2.2",
+    "@astrojs/tailwind": "^5.1.0",
+    "@tweakpane/core": "^1.1.0",
+    "astro": "^4.5.12",
+    "canvas-sketch": "^0.7.6",
+    "canvas-sketch-util": "^1.10.0",
+    "chaikin-smooth": "^1.0.4",
+    "colormap": "^2.3.2",
+    "load-asset": "^1.2.0",
+    "lodash": "^4.17.21",
+    "memoize-one": "^6.0.0",
+    "nice-color-palettes": "^3.0.0",
+    "p5": "^1.9.2",
+    "poisson-disk-sampling": "^2.3.1",
+    "riso-colors": "^1.0.1",
+    "tailwindcss": "^3.4.3",
+    "tweakpane": "^3.1.0",
     "typescript": "^5.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.12",
+    "@types/colormap": "^2.3.4",
+    "@types/lodash": "^4.17.0",
+    "@types/p5": "^1.7.6",
+    "@types/poisson-disk-sampling": "^2.2.4",
+    "canvas-sketch-types": "^1.1.2"
   }
 }

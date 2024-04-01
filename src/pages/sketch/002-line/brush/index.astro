@@ -1,0 +1,208 @@
+---
+import Sketch from "../../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import canvasSketch from "canvas-sketch";
+    import smooth from "chaikin-smooth";
+    import { linspace, lerpArray } from "canvas-sketch-util/math";
+    import type {
+      CanvasSketchSettings,
+      CreateSketch,
+    } from "canvas-sketch-types/canvas-sketch/lib/core/SketchManager";
+
+    const bgColor = "#4B4FC3";
+    const lineColor = "white";
+    const lineWidth = 24;
+    const lineCount = 8;
+    const brushWidth = 200;
+
+    const smoothPolyline = (line: number[][], iterations = 10) => {
+      return new Array(iterations)
+        .fill(undefined)
+        .reduce((acc) => smooth(acc), line);
+    };
+
+    const settings: CanvasSketchSettings = {
+      dimensions: [window.innerWidth, window.innerHeight],
+      scaleToFit: false,
+    };
+
+    function computePolyline(
+      line: [number, number][],
+      options: { width: number; lineCount: number }
+    ) {
+      const computedPolyline: number[][][] = [];
+
+      for (let i = 0; i < line.length - 1; i++) {
+        const pointA = line[i];
+        const pointB = line[i + 1];
+        const cap = i === 0 ? "start" : i === line.length - 2 ? "end" : null;
+
+        computeBrushSegment(pointA, pointB, options, cap).forEach((line, j) => {
+          if (!computedPolyline[j]) {
+            computedPolyline[j] = [];
+          }
+
+          computedPolyline[j].push(...line);
+        });
+      }
+
+      return computedPolyline;
+    }
+
+    function perpendicularLine(
+      point: [number, number],
+      angle: number,
+      length: number
+    ) {
+      const midLength = length / 2;
+
+      return [
+        [
+          Math.sin(angle) * midLength + point[0],
+          -Math.cos(angle) * midLength + point[1],
+        ],
+        [
+          -Math.sin(angle) * midLength + point[0],
+          Math.cos(angle) * midLength + point[1],
+        ],
+      ];
+    }
+
+    function computeBrushSegment(
+      pointA: [number, number],
+      pointB: [number, number],
+      { width = 200, lineCount = 6 } = {},
+      cap: null | "start" | "end" = null
+    ) {
+      const angle = Math.atan2(pointB[1] - pointA[1], pointB[0] - pointA[0]);
+      const radius = width / 2;
+
+      const pLineA = perpendicularLine(pointA, angle, width);
+      const pLineB = perpendicularLine(pointB, angle, width);
+
+      const steps = linspace(lineCount, true);
+      const lines = [];
+
+      for (let i = 0; i < lineCount; i++) {
+        const t = steps[i];
+        let start = lerpArray(pLineA[0], pLineA[1], t);
+        let end = lerpArray(pLineB[0], pLineB[1], t);
+
+        if (cap) {
+          const b = Math.min(
+            radius * 0.93,
+            Math.sqrt(
+              Math.pow(pointA[0] - start[0], 2) +
+                Math.pow(pointA[1] - start[1], 2)
+            )
+          );
+          const distance = Math.sqrt(Math.pow(radius, 2) - Math.pow(b, 2));
+
+          if (cap === "start") {
+            const newX = start[0] - distance * Math.cos(angle);
+            const newY = start[1] - distance * Math.sin(angle);
+
+            start = [newX, newY];
+          }
+
+          if (cap === "end") {
+            const newX = start[0] + distance * Math.cos(angle);
+            const newY = start[1] + distance * Math.sin(angle);
+
+            end = [newX, newY];
+          }
+        }
+
+        lines.push([start, end]);
+      }
+
+      return lines;
+    }
+
+    const sketch: CreateSketch<typeof settings> = () => {
+      return ({ context, width, height }) => {
+        context.fillStyle = bgColor;
+        context.fillRect(0, 0, width, height);
+
+        context.save();
+        context.translate(width * 0.2, height * 0.08);
+
+        let lines: [number, number][][] = [
+          [
+            [0, 300],
+            [300, 500],
+            [600, 200],
+            [900, 500],
+          ],
+        ];
+
+        lines.forEach((line) => {
+          line = smoothPolyline(line, 5);
+
+          computePolyline(line, {
+            width: brushWidth,
+            lineCount,
+          }).forEach((subLine) => {
+            // APPROACH A
+
+            // subLine = smoothPolyline(subLine, 4);
+            context.save();
+            context.strokeStyle = lineColor;
+            context.lineWidth = lineWidth;
+            context.lineCap = "round";
+            context.beginPath();
+            context.moveTo(subLine[0][0], subLine[0][1]);
+
+            let i;
+
+            for (i = 1; i < subLine.length - 2; i++) {
+              const xc = (subLine[i][0] + subLine[i + 1][0]) / 2;
+              const yc = (subLine[i][1] + subLine[i + 1][1]) / 2;
+
+              context.quadraticCurveTo(subLine[i][0], subLine[i][1], xc, yc);
+            }
+
+            // curve through the last two subLine
+            context.quadraticCurveTo(
+              subLine[i][0],
+              subLine[i][1],
+              subLine[i + 1][0],
+              subLine[i + 1][1]
+            );
+            context.stroke();
+            context.restore();
+
+            //
+            // // APPROACH B
+            //
+            // subLine = smoothPolyline(subLine, 4);
+            // for (let i = 0; i < subLine.length - 1; i++) {
+            //   const point = subLine[i];
+            //   context.beginPath();
+            //   context.fillStyle = lineColor;
+            //   context.lineWidth = lineWidth;
+            //   context.arc(point[0], point[1], lineWidth / 2, 0, Math.PI * 2);
+            //   context.fill();
+            // }
+            //
+            // DRAW POINTS
+            //
+            // subLine.forEach((point) => {
+            //   context.fillStyle = "red";
+            //   context.beginPath();
+            //   context.arc(point[0], point[1], 2, 0, Math.PI * 2);
+            //   context.fill();
+            // });
+          });
+        });
+
+        context.restore();
+      };
+    };
+
+    canvasSketch(sketch, settings);
+  </script>
+</Sketch>

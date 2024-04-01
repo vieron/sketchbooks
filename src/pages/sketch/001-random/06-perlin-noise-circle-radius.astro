@@ -1,0 +1,52 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import "p5";
+
+    let noiseMax = 0.6; // between 0 and 10
+    let stepMax = 5;
+    let phase = 0;
+    let zoff = 0;
+    let radiusVariation: number;
+
+    window.setup = () => {
+      radiusVariation = Math.min(windowWidth, windowHeight) * 0.5;
+
+      createCanvas(windowWidth, windowHeight);
+      frameRate(10);
+      background(color("#fca311"));
+    };
+
+    window.draw = () => {
+      const avgRadius = Math.min(windowWidth, windowHeight) * 0.25;
+      const minRadius = avgRadius - radiusVariation * 0.5;
+      const maxRadius = avgRadius + radiusVariation * 0.5;
+      const step = map(noise(phase), 0, 1, radians(0), radians(stepMax));
+
+      translate(width / 2, height / 2);
+      strokeWeight(2);
+      strokeCap(ROUND);
+      stroke(color(0, 0, 0, 8));
+      noFill();
+
+      for (let angle = radians(random(0, 2)); angle <= TWO_PI; angle += step) {
+        let xoff = map(cos(angle + phase), -1, 1, 0, noiseMax);
+        let yoff = map(sin(angle + phase), -1, 1, 0, noiseMax);
+        let r = map(noise(xoff, yoff, zoff), 0, 1, minRadius, maxRadius);
+        let x = r * cos(angle);
+        let y = r * sin(angle);
+
+        line(0, 0, x, y);
+      }
+      phase += 0.09;
+      zoff += 0.03;
+
+      if (frameCount > 100) {
+        noLoop();
+      }
+    };
+  </script>
+</Sketch>

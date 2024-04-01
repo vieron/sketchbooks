@@ -1,0 +1,26 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import "p5";
+
+    window.setup = () => {
+      createCanvas(windowWidth, windowHeight);
+      frameRate(4);
+    };
+
+    window.draw = () => {
+      background(color("#fca311"));
+
+      const margin = Math.min(windowHeight, windowWidth) * 0.05;
+      const r = Math.min(windowHeight, windowWidth) * 0.05;
+      const y = windowHeight / 2;
+      const x = random(margin + r, windowWidth - margin - r);
+
+      fill(0);
+      circle(x, y, r);
+    };
+  </script>
+</Sketch>

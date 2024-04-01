@@ -1,0 +1,57 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import "p5";
+
+    window.setup = () => {
+      noLoop();
+      createCanvas(windowWidth, windowHeight);
+      //   frameRate(4);
+    };
+
+    window.draw = () => {
+      background(color("#fca311"));
+
+      const r = Math.max(Math.min(windowHeight, windowWidth) * 0.01, 2);
+
+      const yVariation = 20;
+      const lineGap = 100;
+      let noiseScale = 0.002;
+
+      const marginX = windowWidth * 0.2;
+      const startX = marginX;
+      const endX = windowWidth - marginX;
+
+      const lineYSpace = lineGap + r * 2;
+      const minMarginY = 50;
+      const marginY =
+        (windowHeight -
+          Math.floor((windowHeight - minMarginY * 2) / lineYSpace) *
+            lineYSpace) /
+        2;
+
+      const startY = marginY;
+      const endY = windowHeight - marginY;
+
+      for (let y = startY; y < endY; y = y + lineGap) {
+        for (let x = startX; x < endX; x++) {
+          const scaledY = map(
+            noise(noiseScale * x),
+            0,
+            1,
+            y - yVariation / 2,
+            y + yVariation / 2
+          );
+
+          fill(0);
+          circle(x, scaledY, r);
+        }
+
+        noiseScale += 0.0015;
+      }
+    };
+  </script>
+</Sketch>

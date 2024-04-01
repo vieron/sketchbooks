@@ -1,0 +1,28 @@
+---
+/// @ts-check
+/// <reference path="../../node_modules/@types/p5/global.d.ts" />
+
+import Layout from "./Layout.astro";
+
+declare global {
+  interface Window {
+    setup: () => void;
+    draw: () => void;
+  }
+}
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={title}>
+  <slot />
+  <style is:global>
+    canvas {
+      display: block;
+    }
+  </style>
+</Layout>
