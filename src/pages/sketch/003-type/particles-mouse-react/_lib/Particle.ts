@@ -92,16 +92,16 @@ export default class Particle {
     context.translate(this.x, this.y);
     context.fillStyle = this.color;
 
-    context.fillRect(
-      0,
-      0,
-      this.radius * 2 * this.scale,
-      this.radius * 2 * this.scale
-    );
+    // context.fillRect(
+    //   0,
+    //   0,
+    //   this.radius * 2 * this.scale,
+    //   this.radius * 2 * this.scale
+    // );
 
-    // context.beginPath();
-    // context.arc(0, 0, this.radius * this.scale, 0, Math.PI * 2);
-    // context.fill();
+    context.beginPath();
+    context.arc(0, 0, this.radius * this.scale, 0, Math.PI * 2);
+    context.fill();
 
     context.restore();
   }

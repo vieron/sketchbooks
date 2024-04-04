@@ -23,7 +23,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
       translate(width / 2, height / 2);
       background(color("#fca311"));
-      strokeWeight(6);
+      strokeWeight(8);
       stroke(0);
       noFill();
       beginShape();
@@ -36,8 +36,8 @@ import Sketch from "../../../layouts/Sketch.astro";
         vertex(x, y);
       }
       endShape(CLOSE);
-      phase += 0.0002;
-      zoff += 0.009;
+      phase += 0;
+      zoff += 0.005;
     };
   </script>
 </Sketch>

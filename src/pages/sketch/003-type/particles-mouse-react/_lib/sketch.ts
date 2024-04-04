@@ -79,7 +79,7 @@ const cursor = { x: Infinity, y: Infinity };
 
 const sketch: CreateSketch<typeof settings> = ({ canvas }) => {
   const image = createTextImage(
-    "VALENTINA",
+    "VIERON",
     `${Math.round(window.innerWidth * 0.16)}px`
   );
   const particles = imageToParticles(image, density);

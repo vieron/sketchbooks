@@ -6,16 +6,11 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.setup = () => {
-      noLoop();
-      createCanvas(windowWidth, windowHeight);
-    };
-
     const xVariation = 40;
     const yVariation = 5;
     const noiseScale = 0.0035;
 
-    const lines = 8;
+    let lines: number;
     const strokeWidth = 3;
     const strokeColor = "#222";
 
@@ -24,8 +19,18 @@ import Sketch from "../../../layouts/Sketch.astro";
 
     const gapX = 20;
     const gapY = 40;
-    const marginX = window.innerWidth * 0.35;
-    const marginY = window.innerHeight * 0.1;
+    let marginX = window.innerWidth * 0.35;
+    let marginY = window.innerHeight * 0.1;
+
+    const maxWindowWidth = 3000;
+    const minWindowWidth = 300;
+
+    window.setup = () => {
+      lines = map(windowWidth, minWindowWidth, maxWindowWidth, 2, 18);
+
+      noLoop();
+      createCanvas(windowWidth, windowHeight);
+    };
 
     function drawLines(
       x: number,
