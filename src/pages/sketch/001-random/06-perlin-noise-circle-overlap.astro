@@ -19,6 +19,10 @@ import Sketch from "../../../layouts/Sketch.astro";
       background(color("#fca311"));
     };
 
+    window.onCanvasResize = () => {
+      background(color("#fca311"));
+    };
+
     window.draw = () => {
       let avgRadius = Math.min(windowWidth, windowHeight) * 0.3;
       let minRadius = avgRadius - radiusVariation * 0.5;

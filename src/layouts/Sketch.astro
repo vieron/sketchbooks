@@ -6,8 +6,13 @@ import Layout from "./Layout.astro";
 
 declare global {
   interface Window {
+    // p5.js global handlers
     setup: () => void;
     draw: () => void;
+    frameCount: number;
+
+    // our own sketch handlers
+    onCanvasResize: () => void;
   }
 }
 
@@ -25,4 +30,13 @@ const { title } = Astro.props;
       display: block;
     }
   </style>
+  <script>
+    window.windowResized =
+      window.windowResized ||
+      (() => {
+        resizeCanvas(windowWidth, windowHeight);
+        window.frameCount = 0;
+        window.onCanvasResize?.();
+      });
+  </script>
 </Layout>
