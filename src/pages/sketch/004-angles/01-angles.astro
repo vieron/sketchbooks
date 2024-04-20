@@ -38,18 +38,12 @@ import Sketch from "../../../layouts/Sketch.astro";
       let startAngle: number;
       let endAngle: number;
 
-      if (x >= 0 && y <= 0) {
-        startAngle = angle;
-        endAngle = 0;
-      } else if (x >= 0 && y >= 0) {
-        startAngle = 0;
-        endAngle = angle;
-      } else if (x <= 0 && y <= 0) {
-        startAngle = angle + (PI - angle);
-        endAngle = angle;
+      if (x >= 0) {
+        startAngle = y <= 0 ? angle : 0;
+        endAngle = y <= 0 ? 0 : angle;
       } else {
-        startAngle = angle;
-        endAngle = angle + (PI - angle);
+        startAngle = y <= 0 ? angle + (PI - angle) : angle;
+        endAngle = y <= 0 ? angle : angle + (PI - angle);
       }
 
       const innerAngle = Math.abs(Math.abs(endAngle) - Math.abs(startAngle));
@@ -89,14 +83,19 @@ import Sketch from "../../../layouts/Sketch.astro";
       strokeWeight(1);
       push();
       translate(center.x, center.y);
-      rotate(
-        startAngle + Math.abs((Math.abs(endAngle) - Math.abs(startAngle)) / 2)
-      );
-      text(
-        `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`,
-        20,
-        3
-      );
+
+      const message = `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`;
+      const w = textWidth(message);
+      const offset = 30;
+
+      if (x >= 0) {
+        rotate((y < 0 ? -1 : 1) * (innerAngle / 2));
+        text(message, offset, 3);
+      } else {
+        rotate((y < 0 ? 1 : -1) * (innerAngle / 2));
+        text(message, -w - offset, 3);
+      }
+
       pop();
 
       // projected arc length
