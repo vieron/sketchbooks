@@ -1,0 +1,61 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="004 Flow fields">
+  <script>
+    import "p5";
+    import { Vector } from "p5";
+
+    const particleCount = 10000;
+    const noiseScale = 0.0015;
+    const offScreen = 300;
+    let particles: Vector[] = [];
+
+    window.setup = () => {
+      createCanvas(windowWidth, windowHeight);
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(
+          createVector(
+            random(-offScreen, windowWidth + offScreen),
+            random(-offScreen, windowHeight + offScreen)
+          )
+        );
+      }
+
+      background(255);
+    };
+
+    window.draw = () => {
+      //   background(255, 20);
+      stroke(50, 40);
+
+      for (let i = 0; i < particleCount; i++) {
+        const p = particles[i];
+
+        point(p.x, p.y);
+
+        const n = noise(p.x * noiseScale, p.y * noiseScale);
+        const angle = TAU * n;
+
+        p.x += cos(angle);
+        p.y += sin(angle);
+
+        if (!onScreen(p)) {
+          p.x = random(width);
+          p.y = random(height);
+        }
+      }
+    };
+
+    function onScreen(v: Vector) {
+      return (
+        v.x >= -offScreen &&
+        v.x <= width + offScreen &&
+        v.y >= -offScreen &&
+        v.y <= height + offScreen
+      );
+    }
+  </script>
+</Sketch>

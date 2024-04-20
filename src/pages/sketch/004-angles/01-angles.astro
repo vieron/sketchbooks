@@ -1,0 +1,146 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="Angles">
+  <script>
+    import "p5";
+    import { Vector } from "p5";
+
+    let center: Vector;
+    let mouse: Vector;
+
+    window.setup = () => {
+      createCanvas(windowWidth, windowHeight);
+
+      center = createVector(width / 2, height / 2);
+      mouse = createVector(width / 3, height / 3);
+    };
+
+    window.touchMoved = window.mouseMoved = () => {
+      mouse.x = mouseX;
+      mouse.y = mouseY;
+    };
+
+    window.draw = () => {
+      background(255);
+
+      const xLength = mouse.x - center.x;
+      const yLength = mouse.y - center.y;
+      // Cartesian to polar coords
+      const radius = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
+      // Pythagoras
+      const angle = atan2(yLength, xLength);
+      const x = radius * cos(angle);
+      const y = radius * sin(angle);
+
+      console.log(mouse, x, y);
+
+      const arcSize = Math.min(20, radius * 2);
+      let startAngle: number;
+      let endAngle: number;
+
+      if (x >= 0 && y <= 0) {
+        startAngle = angle;
+        endAngle = 0;
+      } else if (x >= 0 && y >= 0) {
+        startAngle = 0;
+        endAngle = angle;
+      } else if (x <= 0 && y <= 0) {
+        startAngle = angle + (PI - angle);
+        endAngle = angle;
+      } else {
+        startAngle = angle;
+        endAngle = angle + (PI - angle);
+      }
+
+      const innerAngle = Math.abs(Math.abs(endAngle) - Math.abs(startAngle));
+
+      push();
+      translate(center.x, center.y);
+      // general axis
+      stroke(0, 30);
+      strokeWeight(1);
+      line(0, -height / 2, 0, height / 2); // y
+      line(-width / 2, 0, width / 2, 0); // x
+      // inner axis
+      stroke(0, 100);
+      strokeWeight(1);
+      line(-radius, 0, radius, 0);
+      line(0, -radius, 0, radius);
+      pop();
+
+      // outer circle
+      noFill();
+      stroke(0, 60);
+      strokeWeight(1);
+      circle(center.x, center.y, radius * 2);
+
+      // outer triangle angle
+      stroke(0, 0, 255);
+      arc(center.x, center.y, arcSize, arcSize, angle, 0, OPEN);
+
+      // inner tiangle angle
+      stroke(255, 0, 255);
+      strokeWeight(1);
+      arc(center.x, center.y, arcSize, arcSize, startAngle, endAngle, OPEN);
+      stroke(0, 200, 200);
+
+      // inner angle text
+      stroke(0);
+      strokeWeight(1);
+      push();
+      translate(center.x, center.y);
+      rotate(
+        startAngle + Math.abs((Math.abs(endAngle) - Math.abs(startAngle)) / 2)
+      );
+      text(
+        `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`,
+        20,
+        3
+      );
+      pop();
+
+      // projected arc length
+      stroke(0, 150, 150);
+      strokeWeight(2);
+      arc(
+        center.x,
+        center.y,
+        radius * 2,
+        radius * 2,
+        startAngle,
+        endAngle,
+        OPEN
+      );
+
+      // radius
+      push();
+      stroke(255, 0, 0);
+      strokeWeight(1);
+      translate(center.x, center.y);
+      line(0, 0, x, y);
+      rotate(angle);
+      text(`r ${radius.toFixed(2)}`, radius / 2 - 25, -10);
+      pop();
+
+      // y
+      push();
+      stroke(0, 0, 255);
+      strokeWeight(1);
+      translate(center.x, center.y);
+      line(x, y, x, 0);
+      text(`y ${y.toFixed(2)}`, x + 10, y / 2);
+      pop();
+
+      // x
+      push();
+      stroke(0, 200, 0);
+      strokeWeight(1);
+      translate(center.x, center.y);
+      line(0, 0, x, 0);
+      text(`x ${x.toFixed(2)}`, x / 2, 20);
+      pop();
+    };
+  </script>
+</Sketch>

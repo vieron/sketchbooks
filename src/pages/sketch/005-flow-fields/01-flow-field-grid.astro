@@ -1,0 +1,71 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="004 Flow fields">
+  <script>
+    import "p5";
+    import { Color, Vector } from "p5";
+
+    const noiseScale = 0.004;
+
+    window.setup = () => {
+      createCanvas(windowWidth, windowHeight);
+      frameRate(4);
+    };
+
+    function drawArrow(base: Vector, vec: Vector, myColor: Color) {
+      push();
+      stroke(myColor);
+      strokeWeight(1);
+      fill(myColor);
+      translate(base.x, base.y);
+      line(0, 0, vec.x, vec.y);
+      rotate(vec.heading());
+
+      let arrowSize = 2;
+      translate(vec.mag() - arrowSize, 0);
+      triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+      pop();
+    }
+
+    window.draw = () => {
+      const cellWidth = windowWidth / 30;
+      const cellHeight = windowHeight / 30;
+
+      for (let x = 0; x < windowWidth; x += cellWidth) {
+        for (let y = 0; y < windowHeight; y += cellHeight) {
+          const centerX = x + cellWidth / 2;
+          const centerY = y + cellHeight / 2;
+
+          stroke(0, 0, 0, 25);
+          noFill();
+          rect(x, y, cellWidth, cellHeight);
+
+          fill(0);
+          noStroke();
+          circle(centerX, centerY, 1);
+
+          // Create a p5.Vector to the center.
+          let v0 = createVector(centerX, centerY);
+
+          // Create a p5.Vector with an angle 0 and magnitude 30.
+          let v1 = Vector.fromAngle(
+            map(noise(x * noiseScale, y * noiseScale), 0, 1, 0, TAU),
+            // random(0, Math.PI * 2),
+            Math.min(cellWidth, cellHeight) / 2.8
+          );
+
+          drawArrow(v0, v1, color("black"));
+        }
+      }
+
+      //   const margin = Math.min(windowHeight, windowWidth) * 0.05;
+      //   const r = Math.min(windowHeight, windowWidth) * 0.05;
+      //   const y = windowHeight / 2;
+      //   const x = random(margin + r, windowWidth - margin - r);
+
+      noLoop();
+    };
+  </script>
+</Sketch>
