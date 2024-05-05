@@ -1,5 +1,4 @@
 ---
-import Prose from "../components/Prose.astro";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -12,9 +11,7 @@ const { title } = Astro.props;
 <Layout title={title}>
   <div class="mx-8 mt-10 mb-52 md:mt-20 md:ml-40">
     <div class="container">
-      <Prose>
-        <slot />
-      </Prose>
+      <slot />
     </div>
   </div>
 </Layout>

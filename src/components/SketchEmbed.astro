@@ -1,17 +1,18 @@
 ---
 interface Props {
   id: string;
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
+  aspectRatio?: string;
 }
 
-const { id, width, height } = Astro.props;
+const { id, width = "100%", height, aspectRatio = "16/9" } = Astro.props;
 
 const url = `/sketch/${id}`;
 ---
 
 <figure>
-  <div class="relative max-w-none" style={{ width, height }}>
+  <div class="relative max-w-none" style={{ width, height, aspectRatio }}>
     <iframe
       id={id}
       width="100%"

@@ -1,0 +1,26 @@
+---
+import { getCollection } from "astro:content";
+import Page from "../../layouts/Page.astro";
+import Prose from "../../components/Prose.astro";
+
+const sketchbooks = await getCollection("sketchbooks");
+---
+
+<Page title="Sketchbooks">
+  <nav>
+    <a href="/">← Home</a>
+  </nav>
+  <Prose>
+    <h1>Sketchbooks</h1>
+    {
+      sketchbooks.map(({ slug, data }) => (
+        <>
+          <h2>
+            <a href={`/sketchbooks/${slug}`}>{data.title}</a>
+          </h2>
+          {data.description ? <p>{data.description}</p> : null}
+        </>
+      ))
+    }
+  </Prose>
+</Page>

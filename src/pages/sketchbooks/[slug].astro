@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Page from "../../layouts/Page.astro";
+import Prose from "../../components/Prose.astro";
 // 1. Generate a new path for every collection entry
 export async function getStaticPaths() {
   const sketches = await getCollection("sketchbooks");
@@ -16,6 +17,11 @@ const { Content } = await entry.render();
 ---
 
 <Page title={entry.data.title}>
-  <a href="/">← All sketchbooks</a>
-  <Content />
+  <nav>
+    <a href="/sketchbooks">← All sketchbooks</a>
+  </nav>
+
+  <Prose>
+    <Content />
+  </Prose>
 </Page>
