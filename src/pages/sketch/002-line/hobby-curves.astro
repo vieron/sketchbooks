@@ -1,0 +1,212 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import p5 from "p5";
+    import { createHobbyBezier } from "hobby-curve";
+
+    let grid: (undefined | p5.Vector)[] = [];
+    const active: p5.Vector[] = [];
+    const ordered: p5.Vector[] = [];
+    let cols: number, rows: number;
+
+    // poisson disc
+    const r = 50; // radius
+    const k = 30; // tries
+    const w = r / Math.sqrt(2); // cell width
+
+    // general params
+    const framesPerSecond = 1;
+    const stepsPerFrame = 1000;
+
+    const pointsPerLine = [3, 8];
+    const lineWeight = 20;
+    const strokeMultiplier = 1.3;
+    const margin = 40;
+
+    let gridWidth: number;
+    let gridHeight: number;
+
+    window.setup = () => {
+      noLoop();
+      createCanvas(windowWidth, windowHeight);
+      strokeWeight(4);
+      colorMode(HSB);
+      frameRate(framesPerSecond);
+
+      gridWidth = width - margin * 2;
+      gridHeight = height - margin * 2;
+
+      // STEP 0
+      cols = floor(gridWidth / w);
+      rows = floor(gridHeight / w);
+      for (let i = 0; i < cols * rows; i++) {
+        grid[i] = undefined;
+      }
+
+      // STEP 1
+      const x = gridWidth / 2;
+      const y = gridHeight / 2;
+      const i = floor(x / w);
+      const j = floor(y / w);
+      const pos = createVector(x, y);
+
+      grid[i + j * cols] = pos;
+
+      active.push(pos);
+    };
+
+    window.draw = () => {
+      background(255);
+      translate(margin, margin);
+
+      for (var steps = 0; steps < stepsPerFrame; steps++) {
+        if (active.length > 0) {
+          //   const randIndex = floor(random(active.length));
+          const randIndex = active.length - 1;
+          const pos = active[randIndex];
+
+          let found = false;
+          // tries
+          for (let n = 0; n < k; n++) {
+            const sample = p5.Vector.random2D();
+            const mag = random(r, 2 * r);
+
+            sample.setMag(mag);
+            sample.add(pos);
+
+            const col = floor(sample.x / w);
+            const row = floor(sample.y / w);
+            const cellIndex = col + row * cols;
+
+            // find valid neighbor
+            if (
+              col >= 0 &&
+              row >= 0 &&
+              col < cols &&
+              row < rows &&
+              !grid[cellIndex]
+            ) {
+              let valid = true;
+              for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                  const index = col + i + (row + j) * cols;
+                  const neighbor = grid[index];
+
+                  if (neighbor) {
+                    const d = p5.Vector.dist(sample, neighbor);
+
+                    if (d < r) {
+                      valid = false;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              if (valid) {
+                found = true;
+                grid[cellIndex] = sample;
+
+                active.push(sample);
+                ordered.push(sample);
+                break;
+              }
+            }
+          }
+
+          if (!found) {
+            active.splice(randIndex, 1);
+          }
+        }
+      }
+
+      let currentLine: p5.Vector[] = [];
+      let localPointsPerLine: number = floor(
+        random(pointsPerLine[0], pointsPerLine[1])
+      );
+
+      for (var i = 0; i < ordered.length; i++) {
+        const point = ordered[i];
+
+        // debugging point
+        // stroke(color("red"));
+        // strokeWeight(2);
+        // noFill();
+        // circle(point.x, point.y, 3);
+
+        currentLine.push(point);
+
+        if (currentLine.length === localPointsPerLine) {
+          const hobbyPoints = createHobbyBezier(currentLine, {
+            tension: 0.9,
+            cyclic: false,
+          });
+
+          // first point
+          fill(0, 0, 0);
+          noStroke();
+          circle(currentLine[0].x, currentLine[0].y, lineWeight * 1.6);
+          // last point
+          circle(
+            currentLine[localPointsPerLine - 1].x,
+            currentLine[localPointsPerLine - 1].y,
+            lineWeight * 1.6
+          );
+
+          // background line
+          noFill();
+          stroke(0, 0, 0);
+          strokeWeight(lineWeight * strokeMultiplier);
+          beginShape();
+          vertex(currentLine[0].x, currentLine[0].y);
+          hobbyPoints.forEach(({ startControl, endControl, point }) => {
+            bezierVertex(
+              startControl.x,
+              startControl.y,
+              endControl.x,
+              endControl.y,
+              point.x,
+              point.y
+            );
+          });
+          endShape();
+
+          // foreground line
+          noFill();
+          stroke(i % 255, 100, floor(random(100, 244)));
+          // stroke(color(random(255), random(255), random(255)));
+          strokeWeight(lineWeight);
+          beginShape();
+          vertex(currentLine[0].x, currentLine[0].y);
+          hobbyPoints.forEach(({ startControl, endControl, point }) => {
+            bezierVertex(
+              startControl.x,
+              startControl.y,
+              endControl.x,
+              endControl.y,
+              point.x,
+              point.y
+            );
+          });
+          endShape();
+
+          // empty line
+          localPointsPerLine = floor(
+            random(pointsPerLine[0], pointsPerLine[1])
+          );
+          currentLine = [];
+        }
+      }
+
+      // for (var i = 0; i < active.length; i++) {
+      //   stroke(255, 0, 255);
+      //   strokeWeight(1);
+      //   point(active[i].x, active[i].y);
+      // }
+      //console.log(active.length);
+    };
+  </script>
+</Sketch>
