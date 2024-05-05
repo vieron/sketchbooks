@@ -19,6 +19,8 @@
     "canvas-sketch-util": "^1.10.0",
     "chaikin-smooth": "^1.0.4",
     "colormap": "^2.3.2",
+    "fast-2d-poisson-disk-sampling": "^1.0.3",
+    "hobby-curve": "^0.2.1",
     "load-asset": "^1.2.0",
     "lodash": "^4.17.21",
     "memoize-one": "^6.0.0",
