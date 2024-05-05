@@ -7,27 +7,28 @@ import Sketch from "../../../layouts/Sketch.astro";
     import p5 from "p5";
     import { createHobbyBezier } from "hobby-curve";
 
+    // poisson disc
+    let tries: number;
+    let radius: number;
+    let lineWeight: number;
+
+    let cellSize: number;
+    let gridWidth: number;
+    let gridHeight: number;
+    let margin: number;
+
     let grid: (undefined | p5.Vector)[] = [];
     const active: p5.Vector[] = [];
     const ordered: p5.Vector[] = [];
     let cols: number, rows: number;
 
-    // poisson disc
-    const r = 20; // radius
-    const k = 30; // tries
-
     // general params
     const framesPerSecond = 1;
-    const stepsPerFrame = 7000;
+    const stepsPerFrame = 8000;
 
-    const pointsPerLine = [3, 8];
-    const lineWeight = 10;
+    const pointsPerLine = [3, 25];
     const strokeMultiplier = 1.4;
-    const margin = 110;
-
-    const w = r / Math.sqrt(2); // cell width
-    let gridWidth: number;
-    let gridHeight: number;
+    const marginRange = [20, 90];
 
     window.setup = () => {
       noLoop();
@@ -36,12 +37,20 @@ import Sketch from "../../../layouts/Sketch.astro";
       colorMode(HSB);
       frameRate(framesPerSecond);
 
+      // params
+      radius = floor(random(15, 35));
+      tries = 30;
+      lineWeight = radius * 0.55;
+
+      // computed params
+      cellSize = radius / Math.sqrt(2); // cell width;
+      margin = map(width, 0, 4000, marginRange[0], marginRange[1]);
       gridWidth = width - margin * 2;
       gridHeight = height - margin * 2;
 
       // STEP 0
-      cols = floor(gridWidth / w);
-      rows = floor(gridHeight / w);
+      cols = floor(gridWidth / cellSize);
+      rows = floor(gridHeight / cellSize);
       for (let i = 0; i < cols * rows; i++) {
         grid[i] = undefined;
       }
@@ -49,8 +58,8 @@ import Sketch from "../../../layouts/Sketch.astro";
       // STEP 1
       const x = gridWidth / 2;
       const y = gridHeight / 2;
-      const i = floor(x / w);
-      const j = floor(y / w);
+      const i = floor(x / cellSize);
+      const j = floor(y / cellSize);
       const pos = createVector(x, y);
 
       grid[i + j * cols] = pos;
@@ -70,15 +79,15 @@ import Sketch from "../../../layouts/Sketch.astro";
 
           let found = false;
           // tries
-          for (let n = 0; n < k; n++) {
+          for (let n = 0; n < tries; n++) {
             const sample = p5.Vector.random2D();
-            const mag = random(r, 2 * r);
+            const mag = random(radius, 2 * radius);
 
             sample.setMag(mag);
             sample.add(pos);
 
-            const col = floor(sample.x / w);
-            const row = floor(sample.y / w);
+            const col = floor(sample.x / cellSize);
+            const row = floor(sample.y / cellSize);
             const cellIndex = col + row * cols;
 
             // find valid neighbor
@@ -98,7 +107,7 @@ import Sketch from "../../../layouts/Sketch.astro";
                   if (neighbor) {
                     const d = p5.Vector.dist(sample, neighbor);
 
-                    if (d < r) {
+                    if (d < radius) {
                       valid = false;
                       break;
                     }
@@ -200,13 +209,6 @@ import Sketch from "../../../layouts/Sketch.astro";
           currentLine = [];
         }
       }
-
-      // for (var i = 0; i < active.length; i++) {
-      //   stroke(255, 0, 255);
-      //   strokeWeight(1);
-      //   point(active[i].x, active[i].y);
-      // }
-      //console.log(active.length);
     };
   </script>
 </Sketch>
