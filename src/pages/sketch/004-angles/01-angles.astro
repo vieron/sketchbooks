@@ -34,7 +34,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       const x = radius * cos(angle);
       const y = radius * sin(angle);
 
-      const arcSize = Math.min(20, radius * 2);
+      const arcSize = Math.min(50, radius / 2);
       let startAngle: number;
       let endAngle: number;
 
@@ -69,33 +69,31 @@ import Sketch from "../../../layouts/Sketch.astro";
       circle(center.x, center.y, radius * 2);
 
       // outer triangle angle
-      stroke(0, 0, 255);
-      arc(center.x, center.y, arcSize, arcSize, angle, 0, OPEN);
+      // stroke(0, 0, 255);
+      // arc(center.x, center.y, arcSize, arcSize, angle, 0, OPEN);
 
-      // inner tiangle angle
-      stroke(255, 0, 255);
-      strokeWeight(1);
-      arc(center.x, center.y, arcSize, arcSize, startAngle, endAngle, OPEN);
-      stroke(0, 200, 200);
+      // inner triangle angle
 
       // inner angle text
+      push();
       stroke(0);
       strokeWeight(1);
-      push();
       translate(center.x, center.y);
+      arc(0, 0, arcSize, arcSize, startAngle, endAngle, OPEN);
 
-      const message = `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`;
-      const w = textWidth(message);
-      const offset = 30;
+      (() => {
+        const message = `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`;
+        const w = textWidth(message);
+        const offset = arcSize / 2 + 15;
 
-      if (x >= 0) {
-        rotate((y < 0 ? -1 : 1) * (innerAngle / 2));
-        text(message, offset, 3);
-      } else {
-        rotate((y < 0 ? 1 : -1) * (innerAngle / 2));
-        text(message, -w - offset, 3);
-      }
-
+        if (x >= 0) {
+          rotate((y < 0 ? -1 : 1) * (innerAngle / 2));
+          text(message, offset, 3);
+        } else {
+          rotate((y < 0 ? 1 : -1) * (innerAngle / 2));
+          text(message, -w - offset, 3);
+        }
+      })();
       pop();
 
       // projected arc length
@@ -117,8 +115,20 @@ import Sketch from "../../../layouts/Sketch.astro";
       strokeWeight(1);
       translate(center.x, center.y);
       line(0, 0, x, y);
-      rotate(angle);
-      text(`r ${radius.toFixed(2)}`, radius / 2 - 25, -10);
+      // radius text
+      (() => {
+        const message = `r ${radius.toFixed(2)}`;
+        const w = textWidth(message);
+        const offset = y < 0 ? -12 : 20;
+
+        if (x >= 0) {
+          rotate((y < 0 ? -1 : 1) * innerAngle);
+          text(message, radius / 2 - w / 2, offset);
+        } else {
+          rotate((y < 0 ? 1 : -1) * innerAngle);
+          text(message, -(radius / 2 + w / 2), offset);
+        }
+      })();
       pop();
 
       // y
@@ -127,7 +137,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       strokeWeight(1);
       translate(center.x, center.y);
       line(x, y, x, 0);
-      text(`y ${y.toFixed(2)}`, x + 10, y / 2);
+      text(`y ${y.toFixed(2)}`, x + 10, y / 2 + 5);
       pop();
 
       // x
@@ -136,7 +146,11 @@ import Sketch from "../../../layouts/Sketch.astro";
       strokeWeight(1);
       translate(center.x, center.y);
       line(0, 0, x, 0);
-      text(`x ${x.toFixed(2)}`, x / 2, 20);
+      (() => {
+        const message = `x ${x.toFixed(2)}`;
+        const w = textWidth(message);
+        text(message, x / 2 - w / 2, 20);
+      })();
       pop();
     };
   </script>
