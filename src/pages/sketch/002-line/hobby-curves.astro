@@ -13,19 +13,19 @@ import Sketch from "../../../layouts/Sketch.astro";
     let cols: number, rows: number;
 
     // poisson disc
-    const r = 50; // radius
+    const r = 20; // radius
     const k = 30; // tries
-    const w = r / Math.sqrt(2); // cell width
 
     // general params
     const framesPerSecond = 1;
-    const stepsPerFrame = 1000;
+    const stepsPerFrame = 7000;
 
     const pointsPerLine = [3, 8];
-    const lineWeight = 20;
-    const strokeMultiplier = 1.3;
-    const margin = 40;
+    const lineWeight = 10;
+    const strokeMultiplier = 1.4;
+    const margin = 110;
 
+    const w = r / Math.sqrt(2); // cell width
     let gridWidth: number;
     let gridHeight: number;
 
