@@ -1,28 +1,26 @@
 ---
+import { getCollection } from "astro:content";
 import Page from "../layouts/Page.astro";
 import Prose from "../components/Prose.astro";
+
+const sketchbooks = await getCollection("sketchbooks");
 ---
 
-<Page title="Home">
-  <nav>
-    <a href="/sketchbooks">sketchbooks</a>
-  </nav>
-
+<Page title="Sketchbooks">
+  <!-- <nav>
+    <a href="/">← Home</a>
+  </nav> -->
   <Prose>
-    <h1>Javi Sánchez-Marín</h1>
-    <p>
-      Interdisciplinary software engineer with a strong design background. 15+
-      years of experience building user interfaces, frontend infrastructure and
-      tooling for digital products at large organizations.
-    </p>
-    <p>
-      Currently working in frontend platform infrastructure at <a
-        target="_blank"
-        rel="noopener"
-        href="https://stripe.com/"
-      >
-        <strong>Stripe</strong></a
-      >.
-    </p>
+    <h1>Sketchbooks</h1>
+    {
+      sketchbooks.map(({ slug, data }) => (
+        <>
+          <h2>
+            <a href={`/sketchbooks/${slug}`}>{data.title}</a>
+          </h2>
+          {data.description ? <p>{data.description}</p> : null}
+        </>
+      ))
+    }
   </Prose>
 </Page>
