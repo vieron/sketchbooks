@@ -24,11 +24,12 @@ import Sketch from "../../../layouts/Sketch.astro";
 
     // general params
     const framesPerSecond = 1;
-    const stepsPerFrame = 8000;
+    const stepsPerFrame = 20000;
 
-    const pointsPerLine = [3, 15];
+    const pointsPerLine = [3, 3];
     const strokeMultiplier = 1.4;
-    const marginRange = [20, 90];
+    const marginRange = [20, 140];
+    let hue: number;
 
     window.setup = () => {
       noLoop();
@@ -38,9 +39,10 @@ import Sketch from "../../../layouts/Sketch.astro";
       frameRate(framesPerSecond);
 
       // params
-      radius = floor(random(15, 35));
+      radius = floor(random(10, 15));
       tries = 30;
-      lineWeight = radius * 0.55;
+      lineWeight = radius * 0.85;
+      hue = floor(random(100, 200));
 
       // computed params
       cellSize = radius / Math.sqrt(2); // cell width;
@@ -133,6 +135,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       }
 
       let currentLine: p5.Vector[] = [];
+      // let localPointsPerLine: number = 30;
       let localPointsPerLine: number = floor(
         random(pointsPerLine[0], pointsPerLine[1])
       );
@@ -150,24 +153,23 @@ import Sketch from "../../../layouts/Sketch.astro";
 
         if (currentLine.length === localPointsPerLine) {
           const hobbyPoints = createHobbyBezier(currentLine, {
-            tension: 0.9,
+            tension: 1,
             cyclic: false,
           });
 
-          // first point
-          fill(0, 0, 0);
-          noStroke();
-          circle(currentLine[0].x, currentLine[0].y, lineWeight * 1.6);
-          // last point
-          circle(
-            currentLine[localPointsPerLine - 1].x,
-            currentLine[localPointsPerLine - 1].y,
-            lineWeight * 1.6
-          );
+          // first and last point
+          // fill(0, 0, 0);
+          // noStroke();
+          // circle(currentLine[0].x, currentLine[0].y, lineWeight * 1.6);
+          // circle(
+          //   currentLine[localPointsPerLine - 1].x,
+          //   currentLine[localPointsPerLine - 1].y,
+          //   lineWeight * 1.6
+          // );
 
           // background line
           noFill();
-          stroke(0, 0, 0);
+          stroke(0, 0, 0, 0.6);
           strokeWeight(lineWeight * strokeMultiplier);
           beginShape();
           vertex(currentLine[0].x, currentLine[0].y);
@@ -185,7 +187,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
           // foreground line
           noFill();
-          stroke(i % 255, 100, floor(random(100, 244)));
+          stroke(hue, i % 255, floor(random(100, 244)));
           // stroke(color(random(255), random(255), random(255)));
           strokeWeight(lineWeight);
           beginShape();
