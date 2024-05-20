@@ -1,0 +1,50 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="004 Flow fields">
+  <script>
+    import "p5";
+
+    const noiseScale = 0.0002;
+    const timeNoiseScale = 0.000009;
+
+    window.setup = () => {
+      colorMode(HSB);
+      createCanvas(windowWidth, windowHeight);
+      // frameRate(20);
+      angleMode(RADIANS);
+    };
+
+    let z = 0;
+    window.draw = () => {
+      const bgColor = color("white");
+      const fgColor = color(40, 100, 100);
+
+      background(fgColor);
+      const cellWidth = windowWidth / 350;
+      const cellHeight = windowHeight / 1;
+
+      for (let x = 0; x < windowWidth; x += cellWidth) {
+        for (let y = 0; y < windowHeight; y += cellHeight) {
+          z++;
+
+          stroke(bgColor);
+          fill(bgColor);
+          rect(
+            x,
+            y,
+            cellWidth,
+            map(
+              noise(x * noiseScale, y * noiseScale, z * timeNoiseScale),
+              0,
+              1,
+              0,
+              cellHeight
+            )
+          );
+        }
+      }
+    };
+  </script>
+</Sketch>

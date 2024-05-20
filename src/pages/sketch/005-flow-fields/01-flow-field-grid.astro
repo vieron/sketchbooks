@@ -11,7 +11,6 @@ import Sketch from "../../../layouts/Sketch.astro";
 
     window.setup = () => {
       createCanvas(windowWidth, windowHeight);
-      frameRate(4);
     };
 
     function drawArrow(base: Vector, vec: Vector, myColor: Color) {
@@ -29,43 +28,36 @@ import Sketch from "../../../layouts/Sketch.astro";
       pop();
     }
 
+    let z: number = 0;
     window.draw = () => {
-      const cellWidth = windowWidth / 30;
-      const cellHeight = windowHeight / 30;
+      background(color("white"));
+
+      const cellWidth = windowWidth / 80;
+      const cellHeight = windowHeight / 40;
 
       for (let x = 0; x < windowWidth; x += cellWidth) {
         for (let y = 0; y < windowHeight; y += cellHeight) {
+          z++;
           const centerX = x + cellWidth / 2;
           const centerY = y + cellHeight / 2;
 
-          stroke(0, 0, 0, 25);
-          noFill();
-          rect(x, y, cellWidth, cellHeight);
-
-          fill(0);
-          noStroke();
-          circle(centerX, centerY, 1);
+          // stroke(0, 0, 0, 25);
+          // noFill();
+          // rect(x, y, cellWidth, cellHeight);
 
           // Create a p5.Vector to the center.
-          let v0 = createVector(centerX, centerY);
+          const v0 = createVector(x + cellWidth, y + cellHeight);
+          const n = noise(x * noiseScale, y * noiseScale, z * 0.000002);
+          const angle = map(n, 0, 1, 0, TAU);
 
           // Create a p5.Vector with an angle 0 and magnitude 30.
-          let v1 = Vector.fromAngle(
-            map(noise(x * noiseScale, y * noiseScale), 0, 1, 0, TAU),
-            // random(0, Math.PI * 2),
-            Math.min(cellWidth, cellHeight) / 2.8
-          );
+          const v1 = Vector.fromAngle(angle, Math.min(cellWidth, cellHeight));
 
           drawArrow(v0, v1, color("black"));
         }
       }
 
-      //   const margin = Math.min(windowHeight, windowWidth) * 0.05;
-      //   const r = Math.min(windowHeight, windowWidth) * 0.05;
-      //   const y = windowHeight / 2;
-      //   const x = random(margin + r, windowWidth - margin - r);
-
-      noLoop();
+      // noLoop();
     };
   </script>
 </Sketch>
