@@ -40,39 +40,35 @@ import Sketch from "../../../layouts/Sketch.astro";
     let fontSize: number;
     let fontWeight: number;
 
+    let angleVariation: number;
+
     window.setup = () => {
       noLoop();
       createCanvas(windowWidth, windowHeight);
-      strokeWeight(4);
       colorMode(HSB);
       frameRate(framesPerSecond);
 
       // params
-      radius = 12;
+      radius = 10;
       tries = 20;
       text = "FORM";
       framesPerSecond = 1;
 
-      lineWeight = 16;
-      strokeWidth = 2; //px
+      lineWeight = 14;
+      strokeWidth = 1.4; //px
       pointsPerLine = () =>
         chooseWeighted([
-          // [0.2, 4],
           [0.8, 3],
-          [1, 2],
+          [0.1, 2],
         ]);
       lineTension = () =>
         chooseWeighted([
-          // [0.3, 0.2],
-          // [0.3, 0.4],
-          // [0.6, 0.8],
+          [0.6, 0.8],
           [0.6, 1],
         ]);
       marginRange = [50, 200];
 
       // computed params
-      // fgColorHue = floor(random(1, 360)); // 345;
-      // strokeColor = color(fgColorHue, 50, 20);
       bgColor = "#FFF";
       fgColorHue = floor(random(0, 360)); // 345;
       strokeColor = color(fgColorHue, 80, 30);
@@ -93,6 +89,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       ]);
       fontWeight = 900;
 
+      angleVariation = QUARTER_PI / 4;
       margin = map(width, 0, 4000, marginRange[0], marginRange[1]);
     };
 
@@ -178,9 +175,8 @@ import Sketch from "../../../layouts/Sketch.astro";
         translate(xOffset, 0);
 
         // rotate from center
-        const offsetAngle = QUARTER_PI / 3;
         translate(img.width / 2, img.height / 2);
-        rotate(random(-offsetAngle, offsetAngle));
+        rotate(random(-angleVariation, angleVariation));
         translate(-img.width / 2, -img.height / 2);
 
         // draw letter
