@@ -66,7 +66,7 @@ import Sketch from "../../../layouts/Sketch.astro";
           [0.6, 0.8],
           [0.6, 1],
         ]);
-      marginRange = [30, 80];
+      marginRange = [20, 60];
 
       // computed params
       bgColor = "#FFF";
@@ -90,7 +90,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       fontWeight = 900;
 
       angleVariation = QUARTER_PI / 4;
-      margin = map(width, 0, 4000, marginRange[0], marginRange[1]);
+      margin = map(width, 300, 4000, marginRange[0], marginRange[1]);
     };
 
     window.draw = () => {
@@ -115,7 +115,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       //
       const bgOffset = 100;
       const bgPoints = poissonDisk({
-        radius: 300,
+        radius: 100,
         tries: 10,
         width: width + bgOffset * 2,
         height: height + bgOffset * 2,
@@ -126,9 +126,9 @@ import Sketch from "../../../layouts/Sketch.astro";
       drawHobbyLines(bgPoints, {
         pointsPerLine: () => 3,
         strokeColor: color(bgColor),
-        strokeWidth: 20,
-        lineWeight: 280,
-        fgPalette: [[0.1, color(fgColorHue, 15, 100)]],
+        strokeWidth: 4,
+        lineWeight: 80,
+        fgPalette: [[0.1, color(fgColorHue, 20, 100)]],
       });
       pop();
 
