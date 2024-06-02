@@ -176,6 +176,14 @@ import Sketch from "../../../layouts/Sketch.astro";
       letters.forEach(({ img, points }, i) => {
         push();
         translate(xOffset, 0);
+
+        // rotate from center
+        const offsetAngle = QUARTER_PI / 3;
+        translate(img.width / 2, img.height / 2);
+        rotate(random(-offsetAngle, offsetAngle));
+        translate(-img.width / 2, -img.height / 2);
+
+        // draw letter
         drawHobbyLines(points, {
           pointsPerLine,
           strokeColor,
@@ -183,7 +191,6 @@ import Sketch from "../../../layouts/Sketch.astro";
           lineWeight,
           fgPalette,
           skipPoint: (point) => {
-            const offset = 10;
             const index =
               Math.floor(
                 Math.floor(point.y) * img.width + Math.floor(point.x)
