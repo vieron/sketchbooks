@@ -5,38 +5,40 @@ import Sketch from "../../../layouts/Sketch.astro";
 <Sketch title="003 Line">
   <script>
     import p5 from "p5";
-    import palettes from "nice-color-palettes";
-    import { createHobbyBezier } from "hobby-curve";
+    import poissonDisk from "../../../sketch-utils/poisson-disk";
+    import { chooseWeighted } from "../../../sketch-utils/random";
+    import {
+      createTextImage,
+      getFontSizeToFit,
+    } from "../../../sketch-utils/type";
+    import type { FontAttributes } from "../../../sketch-utils/type";
+    import { drawHobbyLines } from "../../../sketch-utils/hobby-lines";
 
     // poisson disc
     let tries: number;
     let radius: number;
     let lineWeight: number;
+    let lineTension: () => number;
 
-    let cellSize: number;
-    let gridWidth: number;
-    let gridHeight: number;
     let margin: number;
-    let image: ImageData;
-
-    let grid: (undefined | p5.Vector)[] = [];
-    const active: p5.Vector[] = [];
-    const ordered: p5.Vector[] = [];
-    let cols: number, rows: number;
+    let img: ImageData;
 
     // general params
-    const text = "Hi!";
-    const fontSize = "800px";
-    const framesPerSecond = 1;
-    const stepsPerFrame = 300000;
+    let text: string;
+    let framesPerSecond: number;
 
-    const pointsPerLine = [3, 4];
-    const strokeMultiplier = 1.2;
-    const marginRange = [50, 200];
+    let pointsPerLine: () => number;
+    let strokeWidth: number;
+    let marginRange: number[];
 
-    let palette: string[];
     let bgColor: string;
-    let fgPalette: string[];
+    let fgColorHue: number; // 0-360
+    let strokeColor: p5.Color;
+    let fgPalette: [number, p5.Color][];
+
+    let fontName: string;
+    let fontSize: number;
+    let fontWeight: number;
 
     window.setup = () => {
       noLoop();
@@ -46,237 +48,160 @@ import Sketch from "../../../layouts/Sketch.astro";
       frameRate(framesPerSecond);
 
       // params
-      radius = floor(random(4, 11));
-      tries = 30;
-      lineWeight = radius * 1.2;
+      radius = 12;
+      tries = 20;
+      text = "FORM";
+      framesPerSecond = 1;
+
+      lineWeight = 16;
+      strokeWidth = 2; //px
+      pointsPerLine = () =>
+        chooseWeighted([
+          // [0.2, 4],
+          [0.8, 3],
+          [1, 2],
+        ]);
+      lineTension = () =>
+        chooseWeighted([
+          // [0.3, 0.2],
+          // [0.3, 0.4],
+          // [0.6, 0.8],
+          [0.6, 1],
+        ]);
+      marginRange = [50, 200];
 
       // computed params
-      cellSize = radius / Math.sqrt(2); // cell width;
+      // fgColorHue = floor(random(1, 360)); // 345;
+      // strokeColor = color(fgColorHue, 50, 20);
+      bgColor = "#FFF";
+      fgColorHue = floor(random(0, 360)); // 345;
+      strokeColor = color(fgColorHue, 80, 30);
+      fgPalette = [
+        [0.5, color(fgColorHue, 100, 100)],
+        [0.2, color(fgColorHue, 80, 100)],
+        [0.2, color(fgColorHue, 100, 80)],
+        [0.2, color(fgColorHue, 50, 100)],
+        [0.2, color(fgColorHue, 100, 50)],
+        [0.1, color(fgColorHue, 20, 100)],
+      ];
+
+      fontName = random([
+        "system-ui",
+        // "Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro",
+        // "ArchivoBlack-Regular",
+        // "JustBubbleRegular",
+      ]);
+      fontWeight = 900;
+
       margin = map(width, 0, 4000, marginRange[0], marginRange[1]);
-      gridWidth = width;
-      gridHeight = height;
-      palette = random(palettes);
-      bgColor = random(palette);
-      fgPalette = palette.filter((c) => c !== bgColor);
-
-      // create empty grid
-      cols = floor(gridWidth / cellSize);
-      rows = floor(gridHeight / cellSize);
-      for (let i = 0; i < cols * rows; i++) {
-        grid[i] = undefined;
-      }
-
-      // add initial point
-      const x = gridWidth / 2;
-      const y = gridHeight / 2;
-      const i = floor(x / cellSize);
-      const j = floor(y / cellSize);
-      const pos = createVector(x, y);
-
-      grid[i + j * cols] = pos;
-
-      active.push(pos);
-
-      // convert text to bitmap
-      image = createTextImage(text, fontSize, {
-        width: gridWidth,
-        height: gridHeight,
-      });
     };
-
-    interface Point {
-      x: number;
-      y: number;
-    }
-
-    function drawLine(p: {
-      strokeColor: p5.Color;
-      strokeWeight: number;
-      origin: p5.Vector;
-      points: {
-        startControl: Point;
-        endControl: Point;
-        point: Point;
-      }[];
-    }) {
-      noFill();
-      stroke(p.strokeColor);
-      strokeWeight(p.strokeWeight);
-      beginShape();
-      vertex(p.origin.x, p.origin.y);
-      p.points.forEach(({ startControl, endControl, point }) => {
-        bezierVertex(
-          startControl.x,
-          startControl.y,
-          endControl.x,
-          endControl.y,
-          point.x,
-          point.y
-        );
-      });
-      endShape();
-    }
 
     window.draw = () => {
       background(bgColor);
-      // translate(margin, margin);
 
-      for (var steps = 0; steps < stepsPerFrame; steps++) {
-        if (active.length > 0) {
-          //   const randIndex = floor(random(active.length));
-          const randIndex = active.length - 1;
-          const pos = active[randIndex];
+      const fontAttributes: FontAttributes = {
+        fontName,
+        fontSize,
+        fontWeight,
+        letterSpacing: "0em",
+      };
 
-          let found = false;
-          // tries
-          for (let n = 0; n < tries; n++) {
-            const sample = p5.Vector.random2D();
-            const mag = random(radius, 2 * radius);
+      fontSize = getFontSizeToFit({
+        textSample: text,
+        width: width - margin,
+        height: width - margin,
+        ...fontAttributes,
+      });
+      fontAttributes.fontSize = fontSize;
 
-            sample.setMag(mag);
-            sample.add(pos);
+      // BACKGROUND
+      //
+      const bgOffset = 100;
+      const bgPoints = poissonDisk({
+        radius: 300,
+        tries: 10,
+        width: width + bgOffset * 2,
+        height: height + bgOffset * 2,
+      });
 
-            const col = floor(sample.x / cellSize);
-            const row = floor(sample.y / cellSize);
-            const cellIndex = col + row * cols;
+      push();
+      translate(-bgOffset, -bgOffset);
+      drawHobbyLines(bgPoints, {
+        pointsPerLine: () => 3,
+        strokeColor: color(bgColor),
+        strokeWidth: 20,
+        lineWeight: 280,
+        fgPalette: [[0.1, color(fgColorHue, 15, 100)]],
+      });
+      pop();
 
-            // find valid neighbor
-            if (
-              col >= 0 &&
-              row >= 0 &&
-              col < cols &&
-              row < rows &&
-              !grid[cellIndex]
-            ) {
-              let valid = true;
-              for (let i = -1; i <= 1; i++) {
-                for (let j = -1; j <= 1; j++) {
-                  const index = col + i + (row + j) * cols;
-                  const neighbor = grid[index];
+      //
+      // COMPUTE LETTERS
+      //
+      const letters = text.split("").map((char, i) => {
+        img = createTextImage({
+          textSample: char,
+          ...fontAttributes,
+        });
 
-                  if (neighbor) {
-                    const d = p5.Vector.dist(sample, neighbor);
+        const points = poissonDisk({
+          radius,
+          tries,
+          width: img.width,
+          height: img.height,
+        });
 
-                    if (d < radius) {
-                      valid = false;
-                      break;
-                    }
-                  }
-                }
-              }
+        return {
+          img,
+          points,
+        };
+      });
 
-              if (valid) {
-                found = true;
-                grid[cellIndex] = sample;
-
-                active.push(sample);
-                ordered.push(sample);
-                break;
-              }
-            }
-          }
-
-          if (!found) {
-            active.splice(randIndex, 1);
-          }
-        }
-      }
-
-      let currentLine: p5.Vector[] = [];
-      // let localPointsPerLine: number = 30;
-      let localPointsPerLine: number = floor(
-        random(pointsPerLine[0], pointsPerLine[1])
+      const lettersSize = letters.reduce(
+        ({ width, height }, { img }) => ({
+          width: width + img.width,
+          height: Math.max(height, img.height),
+        }),
+        { width: 0, height: 0 }
       );
+      const baseX = width / 2 - lettersSize.width / 2;
+      const baseY = height / 2 - lettersSize.height / 2;
 
-      for (var i = 0; i < ordered.length; i++) {
-        const point = ordered[i];
+      //
+      // DRAW LETTERS
+      //
+      translate(baseX, baseY);
+      let xOffset = 0;
 
-        // debugging point
-        // stroke(color("red"));
-        // strokeWeight(2);
-        // noFill();
-        // circle(point.x, point.y, 1);
+      letters.forEach(({ img, points }, i) => {
+        push();
+        translate(xOffset, 0);
+        drawHobbyLines(points, {
+          pointsPerLine,
+          strokeColor,
+          strokeWidth,
+          lineWeight,
+          fgPalette,
+          skipPoint: (point) => {
+            const offset = 10;
+            const index =
+              Math.floor(
+                Math.floor(point.y) * img.width + Math.floor(point.x)
+              ) * 4;
+            const alpha = img.data[index + 3];
 
-        const index =
-          Math.floor(Math.floor(point.y) * gridWidth + Math.floor(point.x)) * 4;
-        const alpha = image.data[index + 3];
+            // discard points outside of typography shape
+            if (alpha === 0 || typeof alpha === "undefined") {
+              return true;
+            }
 
-        // discard points outside of typography shape
-        if (alpha === 0 || typeof alpha === "undefined") {
-          continue;
-        }
+            return false;
+          },
+        });
+        pop();
 
-        currentLine.push(point);
-
-        // draw lines
-        if (currentLine.length === localPointsPerLine) {
-          const hobbyPoints = createHobbyBezier(currentLine, {
-            tension: 1,
-            cyclic: false,
-          });
-
-          // background line
-          drawLine({
-            strokeColor: color("#222"),
-            strokeWeight: lineWeight * strokeMultiplier,
-            origin: currentLine[0],
-            points: hobbyPoints,
-          });
-
-          // foreground line
-          drawLine({
-            strokeColor: random(fgPalette),
-            strokeWeight: lineWeight,
-            origin: currentLine[0],
-            points: hobbyPoints,
-          });
-
-          // empty line
-          localPointsPerLine = floor(
-            random(pointsPerLine[0], pointsPerLine[1])
-          );
-          currentLine = [];
-        }
-      }
+        xOffset += img.width;
+      });
     };
-
-    function createTextImage(
-      text: string,
-      fontSize: string,
-      canvasSize: { width: number; height: number }
-    ): ImageData {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d")!;
-
-      canvas.width = canvasSize.width;
-      canvas.height = canvasSize.height;
-
-      const x = canvasSize.width / 2;
-      const y = canvasSize.height / 2;
-
-      // see https://modernfontstacks.com/
-      context.font = `900 ${fontSize} Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif`;
-      // context.font = `900 ${fontSize} system-ui, sans-serif`;
-      // context.font = `900 ${fontSize} Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif`;
-      context.fillStyle = "black";
-      context.letterSpacing = "6px";
-      context.textBaseline = "top";
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-
-      const fix =
-        context.measureText(text.slice(0)).actualBoundingBoxDescent / 2;
-
-      context.fillText(text, x, y + fix / 2);
-
-      // debug
-      // document.body.appendChild(canvas);
-      // canvas.style.zIndex = "9999";
-      // canvas.style.position = "absolute";
-      // canvas.style.top = "0";
-      // canvas.style.top = "0";
-
-      return context.getImageData(0, 0, canvasSize.width, canvasSize.height);
-    }
   </script>
 </Sketch>

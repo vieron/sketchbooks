@@ -1,0 +1,106 @@
+---
+import Sketch from "../../../layouts/Sketch.astro";
+---
+
+<Sketch title="003 Line">
+  <script>
+    import p5 from "p5";
+    import {
+      createTextImage,
+      getFontSizeToFit,
+    } from "../../../sketch-utils/type";
+    import type { FontAttributes } from "../../../sketch-utils/type";
+    import { createP5Image } from "../../../sketch-utils/image";
+
+    // poisson disc
+    let tries: number;
+    let radius: number;
+
+    // general params
+    let textSample: string;
+    let framesPerSecond: number;
+
+    let bgColor: string;
+
+    let fontName: string;
+
+    window.setup = () => {
+      noLoop();
+      createCanvas(windowWidth, windowHeight);
+      strokeWeight(4);
+      colorMode(HSB);
+      frameRate(framesPerSecond);
+
+      // params
+      radius = 17;
+      tries = 20;
+      textSample = "lorem ipsum";
+      framesPerSecond = 1;
+
+      bgColor = "#FFF";
+
+      fontName = random([
+        "ArchivoBlack-Regular",
+        // "AGBuchRoundedBQ-Bold",
+        // "JustBubbleRegular",
+        // "Superclarendon",
+      ]);
+    };
+
+    window.draw = () => {
+      background(bgColor);
+
+      const fontAttributes: FontAttributes = {
+        fontName,
+        fontSize: -1,
+        fontWeight: 900,
+        letterSpacing: "auto",
+      };
+
+      const fontSize = getFontSizeToFit({
+        textSample,
+        width,
+        height,
+        ...fontAttributes,
+      });
+
+      fontAttributes.fontSize = fontSize;
+
+      textFont(fontName);
+      textSize(fontSize);
+      textAlign(LEFT, TOP);
+      textStyle(BOLD);
+      text(textSample, 0, 0);
+
+      //
+      // COMPUTE LETTERS
+      //
+      const letters = textSample.split("").map((char, i) => {
+        const img = createTextImage({
+          textSample: char,
+          fontName,
+          fontSize,
+          fontWeight: 900,
+          letterSpacing: "auto",
+        });
+
+        return {
+          img,
+        };
+      });
+
+      let lastOffsetX = 0;
+
+      letters.forEach(({ img }) => {
+        push();
+        translate(lastOffsetX, 300);
+        noFill();
+        stroke("red");
+        rect(0, 0, img.width, img.height);
+        image(createP5Image(img), 0, 0);
+        pop();
+        lastOffsetX += img.width;
+      });
+    };
+  </script>
+</Sketch>
