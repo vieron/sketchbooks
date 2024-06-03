@@ -49,12 +49,12 @@ import Sketch from "../../../layouts/Sketch.astro";
       frameRate(framesPerSecond);
 
       // params
-      radius = 10;
+      radius = map(width, 300, 2000, 5, 10);
       tries = 20;
       text = "FORM";
       framesPerSecond = 1;
 
-      lineWeight = 14;
+      lineWeight = map(width, 300, 2000, 6, 14);
       strokeWidth = 1.4; //px
       pointsPerLine = () =>
         chooseWeighted([
