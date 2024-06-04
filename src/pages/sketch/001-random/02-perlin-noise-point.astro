@@ -6,27 +6,29 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.setup = () => {
-      createCanvas(windowWidth, windowHeight);
-      //   frameRate(4);
-    };
+    window.sketch = (p) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        //   p.frameRate(4);
+      };
 
-    let xoff = 0;
+      let xoff = 0;
 
-    window.draw = () => {
-      background(color("#fca311"));
+      p.draw = () => {
+        p.background(p.color("#fca311"));
 
-      const margin = Math.min(windowHeight, windowWidth) * 0.05;
-      const r = Math.min(windowHeight, windowWidth) * 0.05;
-      const y = windowHeight / 2;
+        const margin = Math.min(p.windowHeight, p.windowWidth) * 0.05;
+        const r = Math.min(p.windowHeight, p.windowWidth) * 0.05;
+        const y = p.windowHeight / 2;
 
-      let min = margin + r;
-      let max = windowWidth - margin - r;
-      let x = noise(xoff) * (max - min) + min;
-      xoff += 0.01;
+        let min = margin + r;
+        let max = p.windowWidth - margin - r;
+        let x = p.noise(xoff) * (max - min) + min;
+        xoff += 0.01;
 
-      fill(0);
-      circle(x, y, r);
+        p.fill(0);
+        p.circle(x, y, r);
+      };
     };
   </script>
 </Sketch>

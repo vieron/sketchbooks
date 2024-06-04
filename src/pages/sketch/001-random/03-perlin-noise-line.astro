@@ -6,52 +6,54 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.setup = () => {
-      noLoop();
-      createCanvas(windowWidth, windowHeight);
-      //   frameRate(4);
-    };
+    window.sketch = (p) => {
+      p.setup = () => {
+        p.noLoop();
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        //   frameRate(4);
+      };
 
-    window.draw = () => {
-      background(color("#fca311"));
+      p.draw = () => {
+        p.background(p.color("#fca311"));
 
-      const r = Math.max(Math.min(windowHeight, windowWidth) * 0.01, 2);
+        const r = Math.max(Math.min(p.windowHeight, p.windowWidth) * 0.01, 2);
 
-      const yVariation = 20;
-      const lineGap = 100;
-      let noiseScale = 0.002;
+        const yVariation = 20;
+        const lineGap = 100;
+        let noiseScale = 0.002;
 
-      const marginX = windowWidth * 0.2;
-      const startX = marginX;
-      const endX = windowWidth - marginX;
+        const marginX = p.windowWidth * 0.2;
+        const startX = marginX;
+        const endX = p.windowWidth - marginX;
 
-      const lineYSpace = lineGap + r * 2;
-      const minMarginY = 50;
-      const marginY =
-        (windowHeight -
-          Math.floor((windowHeight - minMarginY * 2) / lineYSpace) *
-            lineYSpace) /
-        2;
+        const lineYSpace = lineGap + r * 2;
+        const minMarginY = 50;
+        const marginY =
+          (p.windowHeight -
+            Math.floor((p.windowHeight - minMarginY * 2) / lineYSpace) *
+              lineYSpace) /
+          2;
 
-      const startY = marginY;
-      const endY = windowHeight - marginY;
+        const startY = marginY;
+        const endY = p.windowHeight - marginY;
 
-      for (let y = startY; y < endY; y = y + lineGap) {
-        for (let x = startX; x < endX; x++) {
-          const scaledY = map(
-            noise(noiseScale * x),
-            0,
-            1,
-            y - yVariation / 2,
-            y + yVariation / 2
-          );
+        for (let y = startY; y < endY; y = y + lineGap) {
+          for (let x = startX; x < endX; x++) {
+            const scaledY = p.map(
+              p.noise(noiseScale * x),
+              0,
+              1,
+              y - yVariation / 2,
+              y + yVariation / 2
+            );
 
-          fill(0);
-          circle(x, scaledY, r);
+            p.fill(0);
+            p.circle(x, scaledY, r);
+          }
+
+          noiseScale += 0.0015;
         }
-
-        noiseScale += 0.0015;
-      }
+      };
     };
   </script>
 </Sketch>

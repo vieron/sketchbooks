@@ -6,91 +6,97 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    const xVariation = 40;
-    const yVariation = 5;
-    const noiseScale = 0.0035;
+    window.sketch = (p) => {
+      const xVariation = 40;
+      const yVariation = 5;
+      const noiseScale = 0.0035;
 
-    let lines: number;
-    const strokeWidth = 3;
-    const strokeColor = "#222";
+      let lines: number;
+      const strokeWidth = 3;
+      const strokeColor = "#222";
 
-    const cols = 4;
-    const rows = 5;
+      const cols = 4;
+      const rows = 5;
 
-    const gapX = 20;
-    const gapY = 40;
-    let marginX = window.innerWidth * 0.35;
-    let marginY = window.innerHeight * 0.1;
+      const gapX = 20;
+      const gapY = 40;
+      let marginX = p.windowWidth * 0.35;
+      let marginY = p.windowHeight * 0.1;
 
-    const maxWindowWidth = 3000;
-    const minWindowWidth = 300;
+      const maxWindowWidth = 3000;
+      const minWindowWidth = 300;
 
-    window.setup = () => {
-      lines = map(windowWidth, minWindowWidth, maxWindowWidth, 2, 18);
+      p.setup = () => {
+        lines = p.map(p.windowWidth, minWindowWidth, maxWindowWidth, 2, 18);
 
-      noLoop();
-      createCanvas(windowWidth, windowHeight);
-    };
+        p.noLoop();
+        p.createCanvas(p.windowWidth, p.windowHeight);
+      };
 
-    function drawLines(
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      lines: number = 30
-    ): void {
-      const spaceX = Math.floor(width / lines);
-      const remainingX = width - (lines - 1) * spaceX;
-      const startX = x + remainingX / 2;
+      function drawLines(
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        lines: number = 30
+      ): void {
+        const spaceX = Math.floor(width / lines);
+        const remainingX = width - (lines - 1) * spaceX;
+        const startX = x + remainingX / 2;
 
-      noStroke();
-      for (let i = 0; i < lines; i++) {
-        const startY = random(y - yVariation, y + yVariation);
-        const endY = random(y + height - yVariation, y + height + yVariation);
-
-        let lx = startX + spaceX * i;
-
-        for (let ly = startY; ly < endY; ly = ly + strokeWidth / 4) {
-          const noiseX = map(
-            noise(lx * noiseScale, ly * noiseScale),
-            0,
-            1,
-            lx - xVariation / 2,
-            lx + xVariation / 2
+        p.noStroke();
+        for (let i = 0; i < lines; i++) {
+          const startY = p.random(y - yVariation, y + yVariation);
+          const endY = p.random(
+            y + height - yVariation,
+            y + height + yVariation
           );
 
-          fill(color(strokeColor));
-          circle(noiseX, ly, strokeWidth * 2);
+          let lx = startX + spaceX * i;
+
+          for (let ly = startY; ly < endY; ly = ly + strokeWidth / 4) {
+            const noiseX = p.map(
+              p.noise(lx * noiseScale, ly * noiseScale),
+              0,
+              1,
+              lx - xVariation / 2,
+              lx + xVariation / 2
+            );
+
+            p.fill(p.color(strokeColor));
+            p.circle(noiseX, ly, strokeWidth * 2);
+          }
         }
       }
-    }
 
-    window.draw = () => {
-      background(color("#fca311"));
+      p.draw = () => {
+        p.background(p.color("#fca311"));
 
-      const cellWidth = Math.floor(
-        (windowWidth - ((cols - 1) * gapX + marginX * 2)) / cols
-      );
-      const cellHeight = Math.floor(
-        (windowHeight - ((rows - 1) * gapY + marginY * 2)) / rows
-      );
+        const cellWidth = Math.floor(
+          (p.windowWidth - ((cols - 1) * gapX + marginX * 2)) / cols
+        );
+        const cellHeight = Math.floor(
+          (p.windowHeight - ((rows - 1) * gapY + marginY * 2)) / rows
+        );
 
-      const remainingX =
-        windowWidth - (cols * cellWidth + (cols - 1) * gapX + marginX * 2);
-      const remainingY =
-        windowHeight - (rows * cellHeight + (rows - 1) * gapY + marginY * 2);
+        const remainingX =
+          p.windowWidth - (cols * cellWidth + (cols - 1) * gapX + marginX * 2);
+        const remainingY =
+          p.windowHeight -
+          (rows * cellHeight + (rows - 1) * gapY + marginY * 2);
 
-      const startX = remainingX / 2 + marginX;
-      const startY = remainingY / 2 + marginY;
+        const startX = remainingX / 2 + marginX;
+        const startY = remainingY / 2 + marginY;
 
-      for (let col = 0; col < cols; col++) {
-        for (let row = 0; row < rows; row++) {
-          let x = startX + cellWidth * col + gapX * col;
-          let y = startY + cellHeight * row + gapY * row;
+        for (let col = 0; col < cols; col++) {
+          for (let row = 0; row < rows; row++) {
+            let x = startX + cellWidth * col + gapX * col;
+            let y = startY + cellHeight * row + gapY * row;
 
-          drawLines(x, y, cellWidth, cellHeight, lines);
+            drawLines(x, y, cellWidth, cellHeight, lines);
+          }
         }
-      }
+      };
     };
   </script>
 </Sketch>

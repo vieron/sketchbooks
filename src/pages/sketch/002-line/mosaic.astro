@@ -6,38 +6,40 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.setup = () => {
-      noLoop();
-      createCanvas(windowWidth, windowHeight);
-    };
+    window.sketch = (p) => {
+      p.setup = () => {
+        p.noLoop();
+        p.createCanvas(p.windowWidth, p.windowHeight);
+      };
 
-    window.draw = () => {
-      background(color("#fca311"));
+      p.draw = () => {
+        p.background(p.color("#fca311"));
 
-      var step = windowWidth / 40;
+        var step = p.windowWidth / 40;
 
-      for (var x = 0; x < windowWidth; x += step) {
-        for (var y = 0; y < windowHeight; y += step) {
-          drawLine(x, y, step, step);
+        for (var x = 0; x < p.windowWidth; x += step) {
+          for (var y = 0; y < p.windowHeight; y += step) {
+            drawLine(x, y, step, step);
+          }
         }
+      };
+
+      function drawLine(x: number, y: number, width: number, height: number) {
+        var leftToRight = p.random() >= 0.5;
+
+        // stroke(color('#fca311'));
+        p.stroke(p.color("#14213d"));
+
+        if (leftToRight) {
+          p.line(x, y, x + width, y + height);
+        } else {
+          p.line(x + width, y, x, y + height);
+        }
+
+        // stroke(color('#111'));
+        // noFill();
+        // rect(x, y, width, height);
       }
     };
-
-    function drawLine(x: number, y: number, width: number, height: number) {
-      var leftToRight = random() >= 0.5;
-
-      // stroke(color('#fca311'));
-      stroke(color("#14213d"));
-
-      if (leftToRight) {
-        line(x, y, x + width, y + height);
-      } else {
-        line(x + width, y, x, y + height);
-      }
-
-      // stroke(color('#111'));
-      // noFill();
-      // rect(x, y, width, height);
-    }
   </script>
 </Sketch>

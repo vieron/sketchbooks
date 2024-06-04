@@ -4,58 +4,59 @@ import Sketch from "../../../layouts/Sketch.astro";
 
 <Sketch title="004 Flow fields">
   <script>
-    import "p5";
-    import { Vector } from "p5";
+    import p5 from "p5";
 
-    const particleCount = 10000;
-    const noiseScale = 0.0015;
-    const offScreen = 300;
-    let particles: Vector[] = [];
+    window.sketch = (p) => {
+      const particleCount = 10000;
+      const noiseScale = 0.0015;
+      const offScreen = 300;
+      let particles: p5.Vector[] = [];
 
-    window.setup = () => {
-      createCanvas(windowWidth, windowHeight);
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
 
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(
-          createVector(
-            random(-offScreen, windowWidth + offScreen),
-            random(-offScreen, windowHeight + offScreen)
-          )
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(
+            p.createVector(
+              p.random(-offScreen, p.windowWidth + offScreen),
+              p.random(-offScreen, p.windowHeight + offScreen)
+            )
+          );
+        }
+
+        p.background(255);
+      };
+
+      p.draw = () => {
+        //   background(255, 20);
+        p.stroke(50, 40);
+
+        for (let i = 0; i < particleCount; i++) {
+          const point = particles[i];
+
+          p.point(point.x, point.y);
+
+          const n = p.noise(point.x * noiseScale, point.y * noiseScale);
+          const angle = p.TAU * n;
+
+          point.x += p.cos(angle);
+          point.y += p.sin(angle);
+
+          if (!onScreen(point)) {
+            point.x = p.random(p.width);
+            point.y = p.random(p.height);
+          }
+        }
+      };
+
+      function onScreen(v: p5.Vector) {
+        return (
+          v.x >= -offScreen &&
+          v.x <= p.width + offScreen &&
+          v.y >= -offScreen &&
+          v.y <= p.height + offScreen
         );
       }
-
-      background(255);
     };
-
-    window.draw = () => {
-      //   background(255, 20);
-      stroke(50, 40);
-
-      for (let i = 0; i < particleCount; i++) {
-        const p = particles[i];
-
-        point(p.x, p.y);
-
-        const n = noise(p.x * noiseScale, p.y * noiseScale);
-        const angle = TAU * n;
-
-        p.x += cos(angle);
-        p.y += sin(angle);
-
-        if (!onScreen(p)) {
-          p.x = random(width);
-          p.y = random(height);
-        }
-      }
-    };
-
-    function onScreen(v: Vector) {
-      return (
-        v.x >= -offScreen &&
-        v.x <= width + offScreen &&
-        v.y >= -offScreen &&
-        v.y <= height + offScreen
-      );
-    }
   </script>
 </Sketch>

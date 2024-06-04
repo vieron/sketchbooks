@@ -4,60 +4,65 @@ import Sketch from "../../../layouts/Sketch.astro";
 
 <Sketch title="004 Flow fields">
   <script>
-    import "p5";
-    import { Color, Vector } from "p5";
+    import p5 from "p5";
+    import { P } from "../../../../dist/_astro/memoize-one.esm.CVhzSb3s";
 
-    const noiseScale = 0.004;
+    window.sketch = (p) => {
+      const noiseScale = 0.004;
 
-    window.setup = () => {
-      createCanvas(windowWidth, windowHeight);
-    };
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+      };
 
-    function drawArrow(base: Vector, vec: Vector, myColor: Color) {
-      push();
-      stroke(myColor);
-      strokeWeight(1);
-      fill(myColor);
-      translate(base.x, base.y);
-      line(0, 0, vec.x, vec.y);
-      rotate(vec.heading());
+      function drawArrow(base: p5.Vector, vec: p5.Vector, myColor: p5.Color) {
+        p.push();
+        p.stroke(myColor);
+        p.strokeWeight(1);
+        p.fill(myColor);
+        p.translate(base.x, base.y);
+        p.line(0, 0, vec.x, vec.y);
+        p.rotate(vec.heading());
 
-      let arrowSize = 2;
-      translate(vec.mag() - arrowSize, 0);
-      triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
-      pop();
-    }
-
-    let z: number = 0;
-    window.draw = () => {
-      background(color("white"));
-
-      const cellWidth = windowWidth / 80;
-      const cellHeight = windowHeight / 40;
-
-      for (let x = 0; x < windowWidth; x += cellWidth) {
-        for (let y = 0; y < windowHeight; y += cellHeight) {
-          z++;
-          const centerX = x + cellWidth / 2;
-          const centerY = y + cellHeight / 2;
-
-          // stroke(0, 0, 0, 25);
-          // noFill();
-          // rect(x, y, cellWidth, cellHeight);
-
-          // Create a p5.Vector to the center.
-          const v0 = createVector(x + cellWidth, y + cellHeight);
-          const n = noise(x * noiseScale, y * noiseScale, z * 0.000002);
-          const angle = map(n, 0, 1, 0, TAU);
-
-          // Create a p5.Vector with an angle 0 and magnitude 30.
-          const v1 = Vector.fromAngle(angle, Math.min(cellWidth, cellHeight));
-
-          drawArrow(v0, v1, color("black"));
-        }
+        let arrowSize = 2;
+        p.translate(vec.mag() - arrowSize, 0);
+        p.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+        p.pop();
       }
 
-      // noLoop();
+      let z: number = 0;
+      p.draw = () => {
+        p.background(p.color("white"));
+
+        const cellWidth = p.windowWidth / 80;
+        const cellHeight = p.windowHeight / 40;
+
+        for (let x = 0; x < p.windowWidth; x += cellWidth) {
+          for (let y = 0; y < p.windowHeight; y += cellHeight) {
+            z++;
+            const centerX = x + cellWidth / 2;
+            const centerY = y + cellHeight / 2;
+
+            // stroke(0, 0, 0, 25);
+            // noFill();
+            // rect(x, y, cellWidth, cellHeight);
+
+            // Create a p5.Vector to the center.
+            const v0 = p.createVector(x + cellWidth, y + cellHeight);
+            const n = p.noise(x * noiseScale, y * noiseScale, z * 0.000002);
+            const angle = p.map(n, 0, 1, 0, p.TAU);
+
+            // Create a p5.Vector with an angle 0 and magnitude 30.
+            const v1 = p5.Vector.fromAngle(
+              angle,
+              Math.min(cellWidth, cellHeight)
+            );
+
+            drawArrow(v0, v1, p.color("black"));
+          }
+        }
+
+        // noLoop();
+      };
     };
   </script>
 </Sketch>

@@ -7,12 +7,10 @@ type Options = {
   height: number;
 };
 
-export default function poissonDisk({
-  radius,
-  tries,
-  width,
-  height,
-}: Options): p5.Vector[] {
+export default function poissonDisk(
+  p: p5,
+  { radius, tries, width, height }: Options
+): p5.Vector[] {
   const active: p5.Vector[] = [];
   let ordered: p5.Vector[] = [];
   const stepsPerFrame = 600000;
@@ -21,8 +19,8 @@ export default function poissonDisk({
 
   // create empty grid
   const grid: (undefined | p5.Vector)[] = [];
-  const cols = floor(width / cellSize);
-  const rows = floor(height / cellSize);
+  const cols = Math.floor(width / cellSize);
+  const rows = Math.floor(height / cellSize);
 
   for (let i = 0; i < cols * rows; i++) {
     grid[i] = undefined;
@@ -31,9 +29,9 @@ export default function poissonDisk({
   // add initial point
   const x = width / 2;
   const y = height / 2;
-  const i = floor(x / cellSize);
-  const j = floor(y / cellSize);
-  const pos = createVector(x, y);
+  const i = Math.floor(x / cellSize);
+  const j = Math.floor(y / cellSize);
+  const pos = new p5.Vector(x, y);
 
   grid[i + j * cols] = pos;
 
@@ -49,13 +47,13 @@ export default function poissonDisk({
       // tries
       for (let n = 0; n < tries; n++) {
         const sample = p5.Vector.random2D();
-        const mag = random(radius, 2 * radius);
+        const mag = p.random(radius, 2 * radius);
 
         sample.setMag(mag);
         sample.add(pos);
 
-        const col = floor(sample.x / cellSize);
-        const row = floor(sample.y / cellSize);
+        const col = Math.floor(sample.x / cellSize);
+        const row = Math.floor(sample.y / cellSize);
         const cellIndex = col + row * cols;
 
         // find valid neighbor

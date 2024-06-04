@@ -1,7 +1,7 @@
 import p5 from "p5";
 
-export function createP5Image(img: ImageData): p5.Image {
-  const pImg = createImage(img.width, img.height);
+export function createP5Image(p: p5, img: ImageData): p5.Image {
+  const pImg = p.createImage(img.width, img.height);
 
   pImg.loadPixels();
 

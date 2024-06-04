@@ -6,49 +6,51 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    let noiseMax = 0.6; // between 0 and 10
-    let phase = 0;
-    let zoff = 0;
-    let radiusVariation: number;
+    window.sketch = (p) => {
+      let noiseMax = 0.6; // between 0 and 10
+      let phase = 0;
+      let zoff = 0;
+      let radiusVariation: number;
 
-    window.setup = () => {
-      radiusVariation = Math.min(windowWidth, windowHeight) * 0.4;
+      p.setup = () => {
+        radiusVariation = Math.min(p.windowWidth, p.windowHeight) * 0.4;
 
-      createCanvas(windowWidth, windowHeight);
-      frameRate(26);
-      background(color("#fca311"));
-    };
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.frameRate(26);
+        p.background(p.color("#fca311"));
+      };
 
-    window.onCanvasResize = () => {
-      background(color("#fca311"));
-    };
+      // p.onCanvasResize = () => {
+      //   background(color("#fca311"));
+      // };
 
-    window.draw = () => {
-      let avgRadius = Math.min(windowWidth, windowHeight) * 0.3;
-      let minRadius = avgRadius - radiusVariation * 0.5;
-      let maxRadius = avgRadius + radiusVariation * 0.5;
+      p.draw = () => {
+        let avgRadius = Math.min(p.windowWidth, p.windowHeight) * 0.3;
+        let minRadius = avgRadius - radiusVariation * 0.5;
+        let maxRadius = avgRadius + radiusVariation * 0.5;
 
-      translate(width / 2, height / 2);
-      // fill(color("black"));
-      strokeWeight(2);
-      stroke(color(0, 0, 0, 15));
-      noFill();
-      beginShape();
-      for (let a = 0; a < TWO_PI; a += radians(5)) {
-        let xoff = map(cos(a + phase), -1, 1, 0, noiseMax);
-        let yoff = map(sin(a + phase), -1, 1, 0, noiseMax);
-        let r = map(noise(xoff, yoff, zoff), 0, 1, minRadius, maxRadius);
-        let x = r * cos(a);
-        let y = r * sin(a);
-        vertex(x, y);
-      }
-      endShape(CLOSE);
-      phase += 0.009;
-      zoff += 0.003;
+        p.translate(p.width / 2, p.height / 2);
+        // fill(color("black"));
+        p.strokeWeight(2);
+        p.stroke(p.color(0, 0, 0, 15));
+        p.noFill();
+        p.beginShape();
+        for (let a = 0; a < p.TWO_PI; a += p.radians(5)) {
+          let xoff = p.map(p.cos(a + phase), -1, 1, 0, noiseMax);
+          let yoff = p.map(p.sin(a + phase), -1, 1, 0, noiseMax);
+          let r = p.map(p.noise(xoff, yoff, zoff), 0, 1, minRadius, maxRadius);
+          let x = r * p.cos(a);
+          let y = r * p.sin(a);
+          p.vertex(x, y);
+        }
+        p.endShape(p.CLOSE);
+        phase += 0.009;
+        zoff += 0.003;
 
-      if (frameCount > 800) {
-        noLoop();
-      }
+        if (p.frameCount > 800) {
+          p.noLoop();
+        }
+      };
     };
   </script>
 </Sketch>

@@ -12,15 +12,16 @@ type Options = {
 };
 
 export function drawHobbyLines(
+  p: p5,
   points: p5.Vector[],
   {
     pointsPerLine = () => 2,
-    strokeColor = color("black"),
+    strokeColor = p.color("black"),
     strokeWidth = 2,
     lineWeight = 10,
     fgPalette = [
-      [0.5, color(210, 100, 100)],
-      [0.2, color(210, 80, 100)],
+      [0.5, p.color(210, 100, 100)],
+      [0.2, p.color(210, 80, 100)],
     ],
     skipPoint = () => false,
   }: Options
@@ -41,12 +42,12 @@ export function drawHobbyLines(
     // draw lines when it reaches the desired number of points
     if (currentLine.length === localPointsPerLine) {
       const hobbyPoints = createHobbyBezier(currentLine, {
-        tension: random(0.8, 1),
+        tension: p.random(0.8, 1),
         cyclic: false,
       });
 
       // background line
-      drawLine({
+      drawLine(p, {
         strokeColor: strokeColor,
         strokeWeight: lineWeight + strokeWidth * 2,
         origin: currentLine[0],
@@ -54,8 +55,8 @@ export function drawHobbyLines(
       });
 
       // foreground line
-      drawLine({
-        strokeColor: chooseWeighted(fgPalette),
+      drawLine(p, {
+        strokeColor: chooseWeighted(p, fgPalette),
         strokeWeight: lineWeight,
         origin: currentLine[0],
         points: hobbyPoints,
@@ -73,23 +74,26 @@ interface BezierPoint {
   y: number;
 }
 
-function drawLine(p: {
-  strokeColor: p5.Color;
-  strokeWeight: number;
-  origin: p5.Vector;
-  points: {
-    startControl: BezierPoint;
-    endControl: BezierPoint;
-    point: BezierPoint;
-  }[];
-}) {
-  noFill();
-  stroke(p.strokeColor);
-  strokeWeight(p.strokeWeight);
-  beginShape();
-  vertex(p.origin.x, p.origin.y);
-  p.points.forEach(({ startControl, endControl, point }) => {
-    bezierVertex(
+function drawLine(
+  p: p5,
+  o: {
+    strokeColor: p5.Color;
+    strokeWeight: number;
+    origin: p5.Vector;
+    points: {
+      startControl: BezierPoint;
+      endControl: BezierPoint;
+      point: BezierPoint;
+    }[];
+  }
+) {
+  p.noFill();
+  p.stroke(o.strokeColor);
+  p.strokeWeight(o.strokeWeight);
+  p.beginShape();
+  p.vertex(o.origin.x, o.origin.y);
+  o.points.forEach(({ startControl, endControl, point }) => {
+    p.bezierVertex(
       startControl.x,
       startControl.y,
       endControl.x,
@@ -98,5 +102,5 @@ function drawLine(p: {
       point.y
     );
   });
-  endShape();
+  p.endShape();
 }

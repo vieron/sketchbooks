@@ -1,15 +1,15 @@
 ---
-/// @ts-check
-/// <reference path="../../node_modules/@types/p5/global.d.ts" />
-
 import Layout from "./Layout.astro";
+import type p5 from "p5";
+
+type Sketch = ((p: p5) => void) &
+  Partial<{
+    preloadFonts: (p: p5) => Promise<void>;
+  }>;
 
 declare global {
   interface Window {
-    // p5.js global handlers
-    setup: () => void;
-    draw: () => void;
-    frameCount: number;
+    sketch: Sketch;
 
     // our own sketch handlers
     onCanvasResize: () => void;
@@ -31,12 +31,24 @@ const { title } = Astro.props;
     }
   </style>
   <script>
-    window.windowResized =
-      window.windowResized ||
-      (() => {
-        resizeCanvas(windowWidth, windowHeight);
-        window.frameCount = 0;
-        window.onCanvasResize?.();
-      });
+    import p5 from "p5";
+
+    async function initP5() {
+      try {
+        // import the p5 and p5-sounds client-side
+        // const p5 = (await import("p5")).default;
+        const sketch = window.sketch ?? (() => {});
+
+        new p5((p) => sketch(p));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function init() {
+      await initP5();
+    }
+
+    init();
   </script>
 </Layout>

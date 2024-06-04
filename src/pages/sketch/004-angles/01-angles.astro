@@ -10,148 +10,150 @@ import Sketch from "../../../layouts/Sketch.astro";
     let center: Vector;
     let mouse: Vector;
 
-    window.setup = () => {
-      createCanvas(windowWidth, windowHeight);
+    window.sketch = (p) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
 
-      center = createVector(width / 2, height / 2);
-      mouse = createVector(width / 3, height / 3);
-    };
+        center = p.createVector(p.width / 2, p.height / 2);
+        mouse = p.createVector(p.width / 3, p.height / 3);
+      };
 
-    window.touchMoved = window.mouseMoved = () => {
-      mouse.x = mouseX;
-      mouse.y = mouseY;
-    };
+      p.touchMoved = p.mouseMoved = () => {
+        mouse.x = p.mouseX;
+        mouse.y = p.mouseY;
+      };
 
-    window.draw = () => {
-      background(255);
+      p.draw = () => {
+        p.background(255);
 
-      const xLength = mouse.x - center.x;
-      const yLength = mouse.y - center.y;
-      // Cartesian to polar coords
-      const radius = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
-      // Pythagoras
-      const angle = atan2(yLength, xLength);
-      const x = radius * cos(angle);
-      const y = radius * sin(angle);
+        const xLength = mouse.x - center.x;
+        const yLength = mouse.y - center.y;
+        // Cartesian to polar coords
+        const radius = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
+        // Pythagoras
+        const angle = p.atan2(yLength, xLength);
+        const x = radius * p.cos(angle);
+        const y = radius * p.sin(angle);
 
-      const arcSize = Math.min(50, radius / 2);
-      let startAngle: number;
-      let endAngle: number;
-
-      if (x >= 0) {
-        startAngle = y <= 0 ? angle : 0;
-        endAngle = y <= 0 ? 0 : angle;
-      } else {
-        startAngle = y <= 0 ? angle + (PI - angle) : angle;
-        endAngle = y <= 0 ? angle : angle + (PI - angle);
-      }
-
-      const innerAngle = Math.abs(Math.abs(endAngle) - Math.abs(startAngle));
-
-      push();
-      translate(center.x, center.y);
-      // general axis
-      stroke(0, 30);
-      strokeWeight(1);
-      line(0, -height / 2, 0, height / 2); // y
-      line(-width / 2, 0, width / 2, 0); // x
-      // inner axis
-      stroke(0, 100);
-      strokeWeight(1);
-      line(-radius, 0, radius, 0);
-      line(0, -radius, 0, radius);
-      pop();
-
-      // outer circle
-      noFill();
-      stroke(0, 60);
-      strokeWeight(1);
-      circle(center.x, center.y, radius * 2);
-
-      // outer triangle angle
-      // stroke(0, 0, 255);
-      // arc(center.x, center.y, arcSize, arcSize, angle, 0, OPEN);
-
-      // inner triangle angle
-
-      // inner angle text
-      push();
-      stroke(0);
-      strokeWeight(1);
-      translate(center.x, center.y);
-      arc(0, 0, arcSize, arcSize, startAngle, endAngle, OPEN);
-
-      (() => {
-        const message = `angle (${innerAngle.toFixed(2)}rad) (${degrees(innerAngle).toFixed(0)}deg)`;
-        const w = textWidth(message);
-        const offset = arcSize / 2 + 15;
+        const arcSize = Math.min(50, radius / 2);
+        let startAngle: number;
+        let endAngle: number;
 
         if (x >= 0) {
-          rotate((y < 0 ? -1 : 1) * (innerAngle / 2));
-          text(message, offset, 3);
+          startAngle = y <= 0 ? angle : 0;
+          endAngle = y <= 0 ? 0 : angle;
         } else {
-          rotate((y < 0 ? 1 : -1) * (innerAngle / 2));
-          text(message, -w - offset, 3);
+          startAngle = y <= 0 ? angle + (p.PI - angle) : angle;
+          endAngle = y <= 0 ? angle : angle + (p.PI - angle);
         }
-      })();
-      pop();
 
-      // projected arc length
-      stroke(0, 150, 150);
-      strokeWeight(2);
-      arc(
-        center.x,
-        center.y,
-        radius * 2,
-        radius * 2,
-        startAngle,
-        endAngle,
-        OPEN
-      );
+        const innerAngle = Math.abs(Math.abs(endAngle) - Math.abs(startAngle));
 
-      // radius
-      push();
-      stroke(255, 0, 0);
-      strokeWeight(1);
-      translate(center.x, center.y);
-      line(0, 0, x, y);
-      // radius text
-      (() => {
-        const message = `r ${radius.toFixed(2)}`;
-        const w = textWidth(message);
-        const offset = y < 0 ? -12 : 20;
+        p.push();
+        p.translate(center.x, center.y);
+        // general axis
+        p.stroke(0, 30);
+        p.strokeWeight(1);
+        p.line(0, -p.height / 2, 0, p.height / 2); // y
+        p.line(-p.width / 2, 0, p.width / 2, 0); // x
+        // inner axis
+        p.stroke(0, 100);
+        p.strokeWeight(1);
+        p.line(-radius, 0, radius, 0);
+        p.line(0, -radius, 0, radius);
+        p.pop();
 
-        if (x >= 0) {
-          rotate((y < 0 ? -1 : 1) * innerAngle);
-          text(message, radius / 2 - w / 2, offset);
-        } else {
-          rotate((y < 0 ? 1 : -1) * innerAngle);
-          text(message, -(radius / 2 + w / 2), offset);
-        }
-      })();
-      pop();
+        // outer circle
+        p.noFill();
+        p.stroke(0, 60);
+        p.strokeWeight(1);
+        p.circle(center.x, center.y, radius * 2);
 
-      // y
-      push();
-      stroke(0, 0, 255);
-      strokeWeight(1);
-      translate(center.x, center.y);
-      line(x, y, x, 0);
-      text(`y ${y.toFixed(2)}`, x + 10, y / 2 + 5);
-      pop();
+        // outer triangle angle
+        // stroke(0, 0, 255);
+        // arc(center.x, center.y, arcSize, arcSize, angle, 0, OPEN);
 
-      // x
-      push();
-      stroke(0, 200, 0);
-      strokeWeight(1);
-      translate(center.x, center.y);
-      line(0, 0, x, 0);
-      (() => {
-        const message = `x ${x.toFixed(2)}`;
-        const w = textWidth(message);
-        text(message, x / 2 - w / 2, 20);
-      })();
-      pop();
+        // inner triangle angle
+
+        // inner angle text
+        p.push();
+        p.stroke(0);
+        p.strokeWeight(1);
+        p.translate(center.x, center.y);
+        p.arc(0, 0, arcSize, arcSize, startAngle, endAngle, p.OPEN);
+
+        (() => {
+          const message = `angle (${innerAngle.toFixed(2)}rad) (${p.degrees(innerAngle).toFixed(0)}deg)`;
+          const w = p.textWidth(message);
+          const offset = arcSize / 2 + 15;
+
+          if (x >= 0) {
+            p.rotate((y < 0 ? -1 : 1) * (innerAngle / 2));
+            p.text(message, offset, 3);
+          } else {
+            p.rotate((y < 0 ? 1 : -1) * (innerAngle / 2));
+            p.text(message, -w - offset, 3);
+          }
+        })();
+        p.pop();
+
+        // projected arc length
+        p.stroke(0, 150, 150);
+        p.strokeWeight(2);
+        p.arc(
+          center.x,
+          center.y,
+          radius * 2,
+          radius * 2,
+          startAngle,
+          endAngle,
+          p.OPEN
+        );
+
+        // radius
+        p.push();
+        p.stroke(255, 0, 0);
+        p.strokeWeight(1);
+        p.translate(center.x, center.y);
+        p.line(0, 0, x, y);
+        // radius text
+        (() => {
+          const message = `r ${radius.toFixed(2)}`;
+          const w = p.textWidth(message);
+          const offset = y < 0 ? -12 : 20;
+
+          if (x >= 0) {
+            p.rotate((y < 0 ? -1 : 1) * innerAngle);
+            p.text(message, radius / 2 - w / 2, offset);
+          } else {
+            p.rotate((y < 0 ? 1 : -1) * innerAngle);
+            p.text(message, -(radius / 2 + w / 2), offset);
+          }
+        })();
+        p.pop();
+
+        // y
+        p.push();
+        p.stroke(0, 0, 255);
+        p.strokeWeight(1);
+        p.translate(center.x, center.y);
+        p.line(x, y, x, 0);
+        p.text(`y ${y.toFixed(2)}`, x + 10, y / 2 + 5);
+        p.pop();
+
+        // x
+        p.push();
+        p.stroke(0, 200, 0);
+        p.strokeWeight(1);
+        p.translate(center.x, center.y);
+        p.line(0, 0, x, 0);
+        (() => {
+          const message = `x ${x.toFixed(2)}`;
+          const w = p.textWidth(message);
+          p.text(message, x / 2 - w / 2, 20);
+        })();
+        p.pop();
+      };
     };
   </script>
 </Sketch>
