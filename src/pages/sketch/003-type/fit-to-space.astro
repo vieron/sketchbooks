@@ -93,7 +93,7 @@ import Sketch from "../../../layouts/Sketch.astro";
           p.noFill();
           p.stroke("red");
           p.rect(0, 0, img.width, img.height);
-          p.image(p.createP5Image(img), 0, 0);
+          p.image(createP5Image(p, img), 0, 0);
           p.pop();
           lastOffsetX += img.width;
         });
