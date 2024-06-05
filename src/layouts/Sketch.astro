@@ -32,22 +32,27 @@ const { title } = Astro.props;
       }
     }
 
-    async function initP5() {
+    function initP5() {
       try {
         // import the p5 and p5-sounds client-side
         // const p5 = (await import("p5")).default;
         const sketch = window.sketch ?? (() => {});
 
-        new p5((p) => sketch(p));
+        new p5(
+          (p) => sketch(p),
+          document.getElementById("p5-sketch") as HTMLElement
+        );
       } catch (error) {
         console.log(error);
       }
     }
 
     async function init() {
-      await initP5();
+      initP5();
     }
 
-    init();
+    window.addEventListener("DOMContentLoaded", () => {
+      init();
+    });
   </script>
 </Layout>
