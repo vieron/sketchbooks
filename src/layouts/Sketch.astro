@@ -1,20 +1,5 @@
 ---
 import Layout from "./Layout.astro";
-import type p5 from "p5";
-
-type Sketch = ((p: p5) => void) &
-  Partial<{
-    preloadFonts: (p: p5) => Promise<void>;
-  }>;
-
-declare global {
-  interface Window {
-    sketch: Sketch;
-
-    // our own sketch handlers
-    onCanvasResize: () => void;
-  }
-}
 
 interface Props {
   title: string;
@@ -32,6 +17,20 @@ const { title } = Astro.props;
   </style>
   <script>
     import p5 from "p5";
+
+    type Sketch = ((p: p5) => void) &
+      Partial<{
+        preloadFonts: (p: p5) => Promise<void>;
+      }>;
+
+    declare global {
+      interface Window {
+        sketch: Sketch;
+
+        // our own sketch handlers
+        onCanvasResize: () => void;
+      }
+    }
 
     async function initP5() {
       try {
