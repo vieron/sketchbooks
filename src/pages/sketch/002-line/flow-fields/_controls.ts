@@ -17,13 +17,13 @@ export function createControls(
     title: "Randomness",
   });
 
-  const seedControl = f1.addInput(params, "seed", {
+  const seedControl = f1.addBinding(params, "seed", {
     min: 1,
     max: 99999,
     step: 1,
   });
 
-  f1.addInput(params, "noiseFrequency", {
+  f1.addBinding(params, "noiseFrequency", {
     label: "noise frequency",
     min: 0,
     max: 0.2,
@@ -34,7 +34,7 @@ export function createControls(
     title: "Canvas",
   });
 
-  f2.addInput(params, "backgroundColor", {
+  f2.addBinding(params, "backgroundColor", {
     label: "background color",
     picker: "inline",
   });
@@ -43,26 +43,26 @@ export function createControls(
     title: "Lines",
   });
 
-  f3.addInput(params, "lineWidth", {
+  f3.addBinding(params, "lineWidth", {
     label: "width",
     min: 0.1,
     max: 40,
     step: 0.1,
   });
 
-  f3.addInput(params, "lineColor", {
+  f3.addBinding(params, "lineColor", {
     label: "color",
     picker: "inline",
   });
 
-  f3.addInput(params, "lineLength", {
+  f3.addBinding(params, "lineLength", {
     label: "length",
     min: 1,
     max: 800,
     step: 1,
   });
 
-  f3.addInput(params, "startingPointsMinDistance", {
+  f3.addBinding(params, "startingPointsMinDistance", {
     label: "point min distance",
     min: 1,
     max: 200,
@@ -73,7 +73,7 @@ export function createControls(
   //   title: "Debug",
   // });
 
-  // f4.addInput(params, "showFlowField", {
+  // f4.addBinding(params, "showFlowField", {
   //   label: "show flow field",
   // });
 
