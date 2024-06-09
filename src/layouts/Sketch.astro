@@ -9,6 +9,14 @@ const { title } = Astro.props;
 ---
 
 <Layout title={title}>
+  <div class="relative">
+    <div id="p5-sketch"></div>
+    <div
+      id="sketch-controls"
+      class="transition-transform transform-gpu translate-x-[85%] right-0 top-0 hover:translate-x-0 w-[350px] h-screen fixed z-10 p-8 bg-slate-50"
+    >
+    </div>
+  </div>
   <slot />
   <style is:global>
     canvas {
@@ -18,10 +26,7 @@ const { title } = Astro.props;
   <script>
     import p5 from "p5";
 
-    type Sketch = ((p: p5) => void) &
-      Partial<{
-        preloadFonts: (p: p5) => Promise<void>;
-      }>;
+    type Sketch = (p: p5) => void;
 
     declare global {
       interface Window {
