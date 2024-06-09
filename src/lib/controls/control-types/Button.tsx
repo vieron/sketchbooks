@@ -1,6 +1,6 @@
 import Control from "../Control";
 import type { ButtonControlDef } from "../types";
-import { element } from "../utils";
+import { controlField, element } from "../utils";
 
 export default class ButtonControl extends Control<ButtonControlDef> {
   render(el: HTMLElement) {
@@ -9,13 +9,15 @@ export default class ButtonControl extends Control<ButtonControlDef> {
     const button = element(
       "button",
       {
+        className:
+          "px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
         onclick: (_event) => def.action(),
       },
       [def.name]
     );
 
-    const div = element("div", {}, [button]);
+    const field = controlField("", [button]);
 
-    el.appendChild(div);
+    el.appendChild(field);
   }
 }

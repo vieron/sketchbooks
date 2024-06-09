@@ -12,6 +12,8 @@ export default class TextControl extends Control<TextControlDef> {
 
     const input = element("input", {
       type: "text",
+      className:
+        "bg-gray-50 border border-gray-300 text-slate-600 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1",
       value: controlValue,
       onkeyup: (event) => {
         const value = (event?.target as HTMLInputElement)?.value;

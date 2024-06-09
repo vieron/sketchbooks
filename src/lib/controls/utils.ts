@@ -41,7 +41,8 @@ export function controlField(
   const label = element(
     "label",
     {
-      className: "block text-sm",
+      className:
+        "block font-medium text-[0.6rem] text-slate-600 uppercase mb-1",
     },
     [labelText]
   );
@@ -49,7 +50,7 @@ export function controlField(
   const field = element(
     "div",
     {
-      className: "mb-4",
+      className: "mb-2 bg-white p-2",
     },
     [label, ...(children ?? [])]
   );

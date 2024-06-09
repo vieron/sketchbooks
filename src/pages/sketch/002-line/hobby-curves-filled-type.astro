@@ -89,7 +89,7 @@ import Sketch from "../../../layouts/Sketch.astro";
           lineStrokeWidth: {
             name: "Line stroke width",
             type: "range",
-            defaultValue: 0.5,
+            defaultValue: 1,
             min: 0,
             max: 80,
             step: 0.2,
@@ -97,7 +97,7 @@ import Sketch from "../../../layouts/Sketch.astro";
           strokeColor: {
             name: "Stroke color",
             type: "color",
-            defaultValue: "#111",
+            defaultValue: "#222222",
           },
 
           pointsPerLine: {
@@ -109,6 +109,11 @@ import Sketch from "../../../layouts/Sketch.astro";
           },
 
           // background
+          bgColor: {
+            name: "Background color",
+            type: "color",
+            defaultValue: "#FFFFFF",
+          },
           // showBackground: {
           //   name: "Show background",
           //   type: "boolean",
@@ -168,7 +173,7 @@ import Sketch from "../../../layouts/Sketch.astro";
         marginRange = [20, 80];
 
         // computed params
-        bgColor = "#FFF";
+        bgColor = o.bgColor.value;
         strokeColor = p.color(o.strokeColor.value);
 
         fontName = p.random([

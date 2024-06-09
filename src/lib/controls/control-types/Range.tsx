@@ -27,6 +27,9 @@ export default class RangeControl extends Control<RangeControlDef> {
 
     const input = element("input", {
       type: "number",
+      // className: "w-1/4 w-fit",
+      className:
+        "w-1/4 bg-gray-50 border border-gray-300 text-slate-600 text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-2 pr-1 py-1",
       value: "" + controlValue,
       min: "" + def.min,
       max: "" + def.max,
@@ -39,7 +42,15 @@ export default class RangeControl extends Control<RangeControlDef> {
       },
     });
 
-    const field = controlField(def.name, [slider, input]);
+    const group = element(
+      "div",
+      {
+        className: "flex gap-2 items-center",
+      },
+      [slider, input]
+    );
+
+    const field = controlField(def.name, [group]);
 
     el.appendChild(field);
   }
