@@ -6,6 +6,7 @@ import RangeControl from "./control-types/Range";
 import TextControl from "./control-types/Text";
 import ButtonControl from "./control-types/Button";
 import type { ControlDef, ControlsDef } from "./types";
+import ColorPaletteControl from "./control-types/ColorPalette";
 
 type SubscribeFn = (value: Record<string, any>) => void;
 
@@ -44,6 +45,8 @@ export default class Controls<C extends ControlsDef> {
         return new TextControl(def);
       case "color":
         return new ColorControl(def);
+      case "colorpalette":
+        return new ColorPaletteControl(def);
       case "boolean":
         return new BooleanControl(def);
       case "button":

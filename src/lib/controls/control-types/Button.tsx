@@ -2,7 +2,7 @@ import Control from "../Control";
 import type { ButtonControlDef } from "../types";
 import { element } from "../utils";
 
-export default class ColorControl extends Control<ButtonControlDef> {
+export default class ButtonControl extends Control<ButtonControlDef> {
   render(el: HTMLElement) {
     const { def } = this;
 

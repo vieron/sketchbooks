@@ -7,7 +7,7 @@ type Options = {
   strokeColor?: p5.Color;
   strokeWidth?: number;
   lineWeight?: number;
-  fgPalette?: [number, p5.Color][];
+  fgPalette?: [number, string][];
   skipPoint?: (point: p5.Vector) => boolean;
 };
 
@@ -19,10 +19,7 @@ export function drawHobbyLines(
     strokeColor = p.color("black"),
     strokeWidth = 2,
     lineWeight = 10,
-    fgPalette = [
-      [0.5, p.color(210, 100, 100)],
-      [0.2, p.color(210, 80, 100)],
-    ],
+    fgPalette = [[1, "red"]],
     skipPoint = () => false,
   }: Options
 ) {
