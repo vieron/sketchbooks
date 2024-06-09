@@ -31,7 +31,7 @@ export default class RangeControl extends Control<RangeControlDef> {
       min: "" + def.min,
       max: "" + def.max,
       step: "" + def.step,
-      onkeyup: (event) => {
+      oninput: (event) => {
         const value = (event?.target as HTMLInputElement)?.value;
 
         slider.value = value;

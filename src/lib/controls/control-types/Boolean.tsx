@@ -12,7 +12,7 @@ export default class BooleanControl extends Control<BooleanControlDef> {
 
     const input = element("input", {
       type: "checkbox",
-      checked: controlValue,
+      ...(controlValue ? { checked: true } : {}),
       onchange: (event) => {
         const checked = (event?.target as HTMLInputElement)?.checked;
 

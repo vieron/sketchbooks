@@ -5,7 +5,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 <Sketch title="003 Line">
   <script>
     import type p5 from "p5";
-    import palettes from "nice-color-palettes";
+    import palettes from "nice-color-palettes/200.json";
     import poissonDisk from "../../../sketch-utils/poisson-disk";
     import { chooseWeighted } from "../../../sketch-utils/random";
     import {
@@ -21,7 +21,6 @@ import Sketch from "../../../layouts/Sketch.astro";
       let tries: number;
       let radius: number;
       let lineWeight: number;
-      let lineTension: () => number;
 
       let margin: number;
       let img: ImageData;
@@ -35,7 +34,6 @@ import Sketch from "../../../layouts/Sketch.astro";
 
       let bgColor: string;
       let strokeColor: p5.Color;
-      let fgPalette: [number, p5.Color][];
 
       let fontName: string;
       let fontSize: number;
@@ -75,7 +73,7 @@ import Sketch from "../../../layouts/Sketch.astro";
           lineWeight: {
             name: "Line weight",
             type: "range",
-            defaultValue: 9,
+            defaultValue: 20,
             min: 1,
             max: 100,
             value: (controlValue) => p.map(p.width, 300, 2000, 2, controlValue),
@@ -111,11 +109,11 @@ import Sketch from "../../../layouts/Sketch.astro";
           },
 
           // background
-          showBackground: {
-            name: "Show background",
-            type: "boolean",
-            defaultValue: false,
-          },
+          // showBackground: {
+          //   name: "Show background",
+          //   type: "boolean",
+          //   defaultValue: false,
+          // },
 
           // actions
           saveScreenshot: {
@@ -127,6 +125,12 @@ import Sketch from "../../../layouts/Sketch.astro";
 
               p.save(filename);
             },
+          },
+          redraw: {
+            name: "Redraw",
+            type: "button",
+            defaultValue: null,
+            action: () => p.draw(),
           },
         },
         document.body.querySelector("#sketch-controls")!
@@ -161,11 +165,6 @@ import Sketch from "../../../layouts/Sketch.astro";
         lineWeight = o.lineWeight.value;
         strokeWidth = o.lineStrokeWidth.value; //px
         pointsPerLine = o.pointsPerLine.value;
-        lineTension = () =>
-          chooseWeighted(p, [
-            [0.6, 0.8],
-            [0.2, 1],
-          ]);
         marginRange = [20, 80];
 
         // computed params
@@ -207,7 +206,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
         // BACKGROUND
         //
-        if (o.showBackground.value) {
+        if (false) {
           const bgOffset = 100;
           const bgPoints = poissonDisk(p, {
             radius: 5,
