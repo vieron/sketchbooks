@@ -3,7 +3,7 @@ import type { ButtonControlDef } from "../types";
 import { controlField, element } from "../utils";
 
 export default class ButtonControl extends Control<ButtonControlDef> {
-  render(el: HTMLElement) {
+  renderField(el: HTMLElement) {
     const { def } = this;
 
     const button = element(
@@ -18,6 +18,6 @@ export default class ButtonControl extends Control<ButtonControlDef> {
 
     const field = controlField("", [button]);
 
-    el.appendChild(field);
+    return field;
   }
 }

@@ -7,7 +7,7 @@ export default class TextControl extends Control<TextControlDef> {
     return this.def.value?.(this.controlValue) ?? this.def.defaultValue;
   }
 
-  render(el: HTMLElement) {
+  renderField(el: HTMLElement) {
     const { def, controlValue } = this;
 
     const input = element("input", {
@@ -24,6 +24,6 @@ export default class TextControl extends Control<TextControlDef> {
 
     const field = controlField(def.name, [input]);
 
-    el.appendChild(field);
+    return field;
   }
 }

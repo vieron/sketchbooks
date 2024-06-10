@@ -6,7 +6,7 @@ export default class RangeControl extends Control<RangeControlDef> {
   computeValue() {
     return this.def.value?.(this.controlValue) ?? this.def.defaultValue;
   }
-  render(el: HTMLElement) {
+  renderField(el: HTMLElement) {
     const { def, controlValue } = this;
 
     const slider = element("input", {
@@ -52,6 +52,6 @@ export default class RangeControl extends Control<RangeControlDef> {
 
     const field = controlField(def.name, [group]);
 
-    el.appendChild(field);
+    return field;
   }
 }

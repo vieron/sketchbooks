@@ -7,7 +7,7 @@ export default class NumberControl extends Control<NumberControlDef> {
     return this.def.value?.(this.controlValue) ?? this.def.defaultValue;
   }
 
-  render(root: HTMLElement) {
+  renderField(root: HTMLElement) {
     const { def, controlValue } = this;
 
     const input = element("input", {
@@ -24,6 +24,6 @@ export default class NumberControl extends Control<NumberControlDef> {
 
     const field = controlField(def.name, [input]);
 
-    root.appendChild(field);
+    return field;
   }
 }

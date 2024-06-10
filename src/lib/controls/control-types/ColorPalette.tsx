@@ -31,7 +31,7 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
     });
   }
 
-  render(el: HTMLElement) {
+  renderField(el: HTMLElement) {
     const { def, controlValue } = this;
 
     const colorPickers = controlValue.map(([_weight, color], index) =>
@@ -39,7 +39,7 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
     );
 
     const buttonClass =
-      "mr-1 inline-block rounded border border-indigo-600 bg-transparent p-1 align-middle text-sm leading-none font-medium text-indigo-600 hover:bg-transparent hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:text-white";
+      "mr-1 inline-block rounded border border-indigo-600 bg-transparent p-1 align-middle text-sm leading-none font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:text-white";
 
     const add = element(
       "button",
@@ -97,6 +97,6 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
     const colors = element("div", {}, colorPickers);
     const field = controlField(def.name, [colors, remove, add, random]);
 
-    el.appendChild(field);
+    return field;
   }
 }

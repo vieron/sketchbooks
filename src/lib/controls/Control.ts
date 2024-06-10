@@ -1,8 +1,12 @@
-import type { ControlDef } from "./types";
+import type { ControlDef, ControlDefBase } from "./types";
+import { element } from "./utils";
 
-export default class Control<C extends ControlDef> extends EventTarget {
+export default class Control<
+  C extends ControlDefBase<any>
+> extends EventTarget {
   protected def: C;
   protected controlValue: C["defaultValue"];
+  protected field: HTMLElement | null = null;
 
   constructor(def: C) {
     super();
@@ -39,7 +43,18 @@ export default class Control<C extends ControlDef> extends EventTarget {
     // }
   }
 
-  render(el: HTMLElement): void {}
+  render(el: HTMLElement): void {
+    this.field = this.renderField(el);
+    el.appendChild(this.field);
+  }
+
+  renderField(_el: HTMLElement): HTMLElement {
+    return element("div", {}, ["Missing renderField method in control"]);
+  }
+
+  destroy(): void {
+    this.field?.parentNode?.removeChild(this.field);
+  }
 
   get value(): C["defaultValue"] {
     return this.controlValue;

@@ -7,7 +7,7 @@ export default class ColorControl extends Control<ColorControlDef> {
     return this.def.value?.(this.controlValue) ?? this.def.defaultValue;
   }
 
-  render(el: HTMLElement) {
+  renderField(el: HTMLElement) {
     const { def, controlValue } = this;
 
     const input = element("input", {
@@ -22,6 +22,6 @@ export default class ColorControl extends Control<ColorControlDef> {
 
     const field = controlField(def.name, [input]);
 
-    el.appendChild(field);
+    return field;
   }
 }
