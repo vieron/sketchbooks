@@ -19,6 +19,7 @@ export function measureTextBounds(
 ) {
   context.letterSpacing = letterSpacing;
   context.font = `${fontWeight} ${fontSize}px ${fontName}, sans-serif`;
+  context.fontStretch = "semi-condensed";
 
   const measure = context.measureText(textSample);
   const width = measure.width;
@@ -78,6 +79,7 @@ export function createTextImage({
 
   // see https://modernfontstacks.com/
   context.font = `${fontWeight} ${fontSize}px ${fontName}, sans-serif`;
+  context.fontStretch = "semi-condensed";
   context.letterSpacing = letterSpacing;
 
   context.fillStyle = "black";
