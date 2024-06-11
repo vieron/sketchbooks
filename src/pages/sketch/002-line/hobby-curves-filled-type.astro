@@ -53,7 +53,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
           // points
           radius: {
-            name: "Distance between points",
+            name: "Min. points distance",
             type: "range",
             defaultValue: 12,
             min: 1,
@@ -79,6 +79,13 @@ import Sketch from "../../../layouts/Sketch.astro";
             step: 0.2,
             value: (controlValue) => p.map(p.width, 300, 2000, 2, controlValue),
           },
+          pointsPerLine: {
+            name: "Line length",
+            type: "range",
+            defaultValue: 3,
+            min: 2,
+            max: 360,
+          },
           lineColorPalette: {
             name: "Line color palette",
             type: "colorpalette",
@@ -90,8 +97,8 @@ import Sketch from "../../../layouts/Sketch.astro";
             // ].map((color) => [1, color]),
           },
 
-          lineStrokeWidth: {
-            name: "Line stroke width",
+          strokeWidth: {
+            name: "Stroke width",
             type: "range",
             defaultValue: 1.4,
             min: 0,
@@ -102,14 +109,6 @@ import Sketch from "../../../layouts/Sketch.astro";
             name: "Stroke color",
             type: "color",
             defaultValue: "#FFFFFF",
-          },
-
-          pointsPerLine: {
-            name: "Line length",
-            type: "range",
-            defaultValue: 3,
-            min: 2,
-            max: 360,
           },
 
           // background
@@ -145,16 +144,35 @@ import Sketch from "../../../layouts/Sketch.astro";
         {
           Default: {},
           Minimal: {
-            radius: 2, // TODO: this should TS fail
+            radius: 5,
             lineWeight: 1,
+          },
+          Dark: {
+            radius: 15,
+            lineWeight: 17,
+            pointsPerLine: 3,
+            lineColorPalette: [[1, "#000000"]],
+            strokeWidth: 0.8,
+            strokeColor: "#FFFFFF",
+            bgColor: "#000000",
+          },
+          Scribble: {
+            radius: 8,
+            lineWeight: 3,
+            pointsPerLine: 20,
+            lineColorPalette: [
+              [1, "#FFA200"],
+              [0.3, "#000000"],
+            ],
+            strokeWidth: 0,
+            strokeColor: "#FFFFFF",
+            bgColor: "#FFFFFF",
           },
         },
         document.body.querySelector("#sketch-controls")!
       );
 
-      c.subscribe((state) => {
-        p.draw();
-      });
+      c.subscribe(() => p.draw());
 
       p.preload = async () => {
         // font = p.loadFont("/public/fonts/Atop.ttf");
@@ -180,7 +198,7 @@ import Sketch from "../../../layouts/Sketch.astro";
         tries = 30;
         text = o.text.value;
         lineWeight = o.lineWeight.value;
-        strokeWidth = o.lineStrokeWidth.value; //px
+        strokeWidth = o.strokeWidth.value; //px
         pointsPerLine = o.pointsPerLine.value;
         marginRange = [20, 80];
 

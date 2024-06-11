@@ -94,8 +94,18 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
       ["random"]
     );
 
-    const colors = element("div", {}, colorPickers);
-    const field = controlField(def.name, [colors, remove, add, random]);
+    const colors = element(
+      "div",
+      { className: "flex align-items" },
+      colorPickers
+    );
+    const controls = element("div", { className: "basis-full shrink-0" }, [
+      remove,
+      add,
+      random,
+    ]);
+
+    const field = controlField(def.name, [colors, controls]);
 
     return field;
   }

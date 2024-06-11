@@ -34,6 +34,16 @@ export function element<T extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
+export function field(children?: (Node | string)[]): HTMLDivElement {
+  return element(
+    "div",
+    {
+      className: "mb-[1px] bg-white p-1 flex items-center gap-1",
+    },
+    children ?? []
+  );
+}
+
 export function controlField(
   labelText: string,
   children?: (Node | string)[]
@@ -41,8 +51,7 @@ export function controlField(
   const label = element(
     "label",
     {
-      className:
-        "block font-medium text-[0.6rem] text-slate-600 uppercase mb-1",
+      className: "shrink-0 grow-0 font-light text-xs text-black w-1/4",
     },
     [labelText]
   );
@@ -50,9 +59,18 @@ export function controlField(
   const field = element(
     "div",
     {
-      className: "mb-2 bg-white p-2",
+      className: "mb-[1px] bg-white p-1 flex items-center gap-1",
     },
-    [label, ...(children ?? [])]
+    [
+      label,
+      element(
+        "div",
+        {
+          className: "shrink-1 grow-1 w-3/4",
+        },
+        children
+      ),
+    ]
   );
 
   return field;
