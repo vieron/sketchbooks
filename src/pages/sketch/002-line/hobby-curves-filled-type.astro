@@ -44,129 +44,132 @@ import Sketch from "../../../layouts/Sketch.astro";
 
       const c = new Controls(
         {
-          // text
-          text: {
-            name: "Text",
-            type: "text",
-            defaultValue: "FORM",
-          },
+          controls: {
+            // text
+            text: {
+              name: "Text",
+              type: "text",
+              defaultValue: "FORM",
+            },
 
-          // points
-          radius: {
-            name: "Min. points distance",
-            type: "range",
-            defaultValue: 12,
-            min: 1,
-            max: 100,
-            value: (controlValue) =>
-              p.map(p.width, 300, 2000, 1.5, controlValue),
-          },
-          // tries: {
-          //   name: "Tries",
-          //   type: "range",
-          //   defaultValue: 30,
-          //   min: 1,
-          //   max: 3000,
-          // },
+            // points
+            radius: {
+              name: "Min. points distance",
+              type: "range",
+              defaultValue: 12,
+              min: 1,
+              max: 100,
+              value: (controlValue) =>
+                p.map(p.width, 300, 2000, 1.5, controlValue),
+            },
+            // tries: {
+            //   name: "Tries",
+            //   type: "range",
+            //   defaultValue: 30,
+            //   min: 1,
+            //   max: 3000,
+            // },
 
-          // lines
-          lineWeight: {
-            name: "Line weight",
-            type: "range",
-            defaultValue: 18,
-            min: 0.2,
-            max: 100,
-            step: 0.2,
-            value: (controlValue) => p.map(p.width, 300, 2000, 2, controlValue),
-          },
-          pointsPerLine: {
-            name: "Line length",
-            type: "range",
-            defaultValue: 3,
-            min: 2,
-            max: 360,
-          },
-          lineColorPalette: {
-            name: "Line color palette",
-            type: "colorpalette",
-            defaultValue: ["#2B2E4A", "#E84545", "#903749", "#53354A"].map(
-              (color) => [1, color]
-            ),
-            // defaultValue: palettes[
-            //   p.floor(p.random(0, palettes.length - 1))
-            // ].map((color) => [1, color]),
-          },
+            // lines
+            lineWeight: {
+              name: "Line weight",
+              type: "range",
+              defaultValue: 18,
+              min: 0.2,
+              max: 100,
+              step: 0.2,
+              value: (controlValue) =>
+                p.map(p.width, 300, 2000, 2, controlValue),
+            },
+            pointsPerLine: {
+              name: "Line length",
+              type: "range",
+              defaultValue: 3,
+              min: 2,
+              max: 360,
+            },
+            lineColorPalette: {
+              name: "Line color palette",
+              type: "colorpalette",
+              defaultValue: ["#2B2E4A", "#E84545", "#903749", "#53354A"].map(
+                (color) => [1, color]
+              ),
+              // defaultValue: palettes[
+              //   p.floor(p.random(0, palettes.length - 1))
+              // ].map((color) => [1, color]),
+            },
 
-          strokeWidth: {
-            name: "Stroke width",
-            type: "range",
-            defaultValue: 1.4,
-            min: 0,
-            max: 80,
-            step: 0.2,
-          },
-          strokeColor: {
-            name: "Stroke color",
-            type: "color",
-            defaultValue: "#FFFFFF",
-          },
+            strokeWidth: {
+              name: "Stroke width",
+              type: "range",
+              defaultValue: 1.4,
+              min: 0,
+              max: 80,
+              step: 0.2,
+            },
+            strokeColor: {
+              name: "Stroke color",
+              type: "color",
+              defaultValue: "#FFFFFF",
+            },
 
-          // background
-          bgColor: {
-            name: "Background color",
-            type: "color",
-            defaultValue: "#FFFFFF",
-          },
-          // showBackground: {
-          //   name: "Show background",
-          //   type: "boolean",
-          //   defaultValue: false,
-          // },
+            // background
+            bgColor: {
+              name: "Background color",
+              type: "color",
+              defaultValue: "#FFFFFF",
+            },
+            // showBackground: {
+            //   name: "Show background",
+            //   type: "boolean",
+            //   defaultValue: false,
+            // },
 
-          // actions
-          saveScreenshot: {
-            name: "Save image",
-            type: "button",
-            defaultValue: null,
-            action: () => {
-              const filename = `${Date.now()}.png`;
+            // actions
+            saveScreenshot: {
+              name: "Save image",
+              type: "button",
+              defaultValue: null,
+              action: () => {
+                const filename = `${Date.now()}.png`;
 
-              p.save(filename);
+                p.save(filename);
+              },
+            },
+            redraw: {
+              name: "Redraw",
+              type: "button",
+              defaultValue: null,
+              action: () => p.draw(),
             },
           },
-          redraw: {
-            name: "Redraw",
-            type: "button",
-            defaultValue: null,
-            action: () => p.draw(),
-          },
-        },
-        {
-          Default: {},
-          Minimal: {
-            radius: 5,
-            lineWeight: 1,
-          },
-          Dark: {
-            radius: 15,
-            lineWeight: 17,
-            pointsPerLine: 3,
-            lineColorPalette: [[1, "#000000"]],
-            strokeWidth: 0.8,
-            strokeColor: "#FFFFFF",
-            bgColor: "#000000",
-          },
-          Scribble: {
-            radius: 8,
-            lineWeight: 3,
-            pointsPerLine: 20,
-            lineColorPalette: [
-              [1, "#FFA200"],
-              [0.3, "#000000"],
-            ],
-            strokeWidth: 0,
-            strokeColor: "#FFFFFF",
-            bgColor: "#FFFFFF",
+          presets: {
+            Default: {},
+            Minimal: {
+              radius: 5,
+              lineWeight: 1,
+            },
+            Dark: {
+              radius: 15,
+              lineWeight: 17,
+              pointsPerLine: 3,
+              lineColorPalette: [[1, "#000000"]],
+              strokeWidth: 0.8,
+              strokeColor: "#FFFFFF",
+              bgColor: "#000000",
+            },
+            Scribble: {
+              radius: 8,
+              lineWeight: 3,
+              pointsPerLine: 20,
+              lineColorPalette: [
+                [1, "#FFA200"],
+                [0.3, "#000000"],
+              ],
+              strokeWidth: 0,
+              strokeColor: "#FFFFFF",
+              bgColor: "#FFFFFF",
+            },
           },
         },
         document.body.querySelector("#sketch-controls")!

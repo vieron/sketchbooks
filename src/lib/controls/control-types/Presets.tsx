@@ -14,7 +14,11 @@ export default class Presets<C extends ControlsDef> extends EventTarget {
     this.selectedPreset = Object.keys(this.defs)[0];
   }
 
-  render(el: HTMLElement) {
+  render(el: HTMLElement): HTMLElement | undefined {
+    if (!Object.keys(this.defs).length) {
+      return;
+    }
+
     const select = element(
       "select",
       {

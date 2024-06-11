@@ -11,9 +11,17 @@ import Presets from "./control-types/Presets";
 
 type SubscribeFn = (value: Record<string, any>) => void;
 
+type ControlsOptions<Defs extends ControlsDef> = {
+  controls: Defs;
+  presets?: PresetsDef<Defs>;
+  defaultPresset?: keyof PresetsDef<Defs>;
+};
+
 export default class Controls<C extends ControlsDef> {
   private runtimeDef: C;
   private originalDef: C;
+  private presetDefs: PresetsDef<C>;
+  private defaultPreset: keyof PresetsDef<C> | undefined;
   private el: HTMLElement;
   private subscribers: SubscribeFn[] = [];
 
@@ -25,14 +33,19 @@ export default class Controls<C extends ControlsDef> {
 
   private presets: Presets<C> = {} as Presets<C>;
 
-  constructor(def: C, presets: PresetsDef<C>, el: HTMLElement) {
-    this.originalDef = def;
-    this.runtimeDef = def;
-    this.presets = new Presets(presets);
+  constructor(
+    { controls, presets = {}, defaultPresset }: ControlsOptions<C>,
+    el: HTMLElement
+  ) {
+    this.originalDef = this.runtimeDef = controls;
+    this.presetDefs = presets;
+    this.presets = new Presets(presets ?? {});
+    this.defaultPreset = defaultPresset;
     this.el = el;
   }
 
   public init() {
+    this.defaultPreset && this.loadPreset(this.defaultPreset);
     this.load();
     this.render();
   }
@@ -66,8 +79,34 @@ export default class Controls<C extends ControlsDef> {
     this.subscribers.forEach((fn) => fn(this));
   };
 
+  private loadPreset(preset: keyof PresetsDef<C>): void {
+    // destroy existing controls
+    Object.values(this.controls).forEach((control) => control.destroy());
+
+    const presetDef = this.presetDefs[preset];
+
+    // override default values of control definitions
+    this.runtimeDef = Object.entries(this.originalDef).reduce(
+      (defs, [key, def]) => {
+        if (!presetDef) {
+          return Object.assign(defs, def);
+        }
+
+        return Object.assign(defs, {
+          [key]: {
+            ...def,
+            defaultValue: presetDef.hasOwnProperty(key)
+              ? presetDef[key]
+              : def.defaultValue,
+          },
+        });
+      },
+      {} as typeof this.originalDef
+    );
+  }
+
   private load() {
-    // setup controls
+    // setup this.controls
     Object.entries(this.runtimeDef).reduce((controls, [key, def]) => {
       const control = this.registerControl(def);
 
@@ -79,27 +118,12 @@ export default class Controls<C extends ControlsDef> {
     }, this.controls);
   }
 
-  // TODO: improve how we handle preset updates and re-render Controls
   private renderPresetSelector() {
     this.presets.addEventListener("presets:change", (e: Event) => {
-      const { preset } = (e as CustomEvent<{ preset: PresetsDef<C>[string] }>)
-        .detail;
+      const presetName = (e as CustomEvent<{ value: keyof PresetsDef<C> }>)
+        .detail?.value;
 
-      Object.values(this.controls).forEach((control) => control.destroy());
-      this.runtimeDef = Object.entries(this.originalDef).reduce(
-        (defs, [key, def]) => {
-          return Object.assign(defs, {
-            [key]: {
-              ...def,
-              defaultValue: preset.hasOwnProperty(key)
-                ? preset[key]
-                : def.defaultValue,
-            },
-          });
-        },
-        {} as typeof this.originalDef
-      );
-
+      this.loadPreset(presetName);
       this.load();
       this.renderControls();
       this.notifySubcribers();
