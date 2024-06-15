@@ -5,12 +5,21 @@ type Options = {
   tries: number;
   width: number;
   height: number;
+  skipPoint?: (point: p5.Vector) => boolean;
 };
+
+type Result = {
+  points: p5.Vector[];
+  grid: PointsGrid;
+  extra: { cols: number; rows: number };
+};
+
+export type PointsGrid = (undefined | null | p5.Vector)[];
 
 export default function poissonDisk(
   p: p5,
-  { radius, tries, width, height }: Options
-): p5.Vector[] {
+  { radius, tries, width, height, skipPoint = () => false }: Options
+): Result {
   const active: p5.Vector[] = [];
   let ordered: p5.Vector[] = [];
   const stepsPerFrame = 600000;
@@ -18,7 +27,7 @@ export default function poissonDisk(
   const cellSize = radius / Math.sqrt(2); // cell width;
 
   // create empty grid
-  const grid: (undefined | p5.Vector)[] = [];
+  const grid: PointsGrid = [];
   const cols = Math.floor(width / cellSize);
   const rows = Math.floor(height / cellSize);
 
@@ -62,7 +71,7 @@ export default function poissonDisk(
           row >= 0 &&
           col < cols &&
           row < rows &&
-          !grid[cellIndex]
+          typeof grid[cellIndex] === "undefined"
         ) {
           let valid = true;
 
@@ -84,10 +93,16 @@ export default function poissonDisk(
 
           if (valid) {
             found = true;
-            grid[cellIndex] = sample;
 
             active.push(sample);
-            ordered.push(sample);
+
+            if (!skipPoint(sample)) {
+              grid[cellIndex] = sample;
+              ordered.push(sample);
+            } else {
+              grid[cellIndex] = null;
+            }
+
             break;
           }
         }
@@ -99,5 +114,5 @@ export default function poissonDisk(
     }
   }
 
-  return ordered;
+  return { points: ordered, grid, extra: { cols, rows } };
 }

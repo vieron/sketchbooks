@@ -13,6 +13,7 @@ export default class ColorControl extends Control<ColorControlDef> {
     const input = element("input", {
       type: "color",
       value: controlValue,
+      className: "bg-slate-800",
       oninput: (event) => {
         const value = (event?.target as HTMLInputElement)?.value;
 

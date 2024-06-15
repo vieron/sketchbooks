@@ -6,16 +6,26 @@ export default class RangeControl extends Control<RangeControlDef> {
   computeValue() {
     return this.def.value?.(this.controlValue) ?? this.def.defaultValue;
   }
+
   renderField(el: HTMLElement) {
     const { def, controlValue } = this;
+    // https://www.ctrl.blog/entry/html5-input-number-localization.html
+    // https://codepen.io/aminimalanimal/full/bdOzRG
+    const numberFormatter = new Intl.NumberFormat(navigator.language);
 
     const slider = element("input", {
       type: "range",
       className:
-        "w-3/4 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer range-lg dark:bg-gray-700",
+        "w-3/4 h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer range-lg",
       value: "" + controlValue,
-      min: "" + def.min,
-      max: "" + def.max,
+      min:
+        typeof def.min !== "undefined"
+          ? numberFormatter.format(def.min)
+          : undefined,
+      max:
+        typeof def.max !== "undefined"
+          ? numberFormatter.format(def.max)
+          : undefined,
       step: "" + def.step,
       oninput: (event) => {
         const value = (event?.target as HTMLInputElement)?.value;
@@ -27,9 +37,8 @@ export default class RangeControl extends Control<RangeControlDef> {
 
     const input = element("input", {
       type: "number",
-      // className: "w-1/4 w-fit",
       className:
-        "w-1/4 bg-gray-50 border border-gray-300 text-slate-600 text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-2 pr-1 py-1",
+        "w-1/4 bg-slate-700 border border-slate-900 text-slate-300 text-xs rounded-md focus:ring-blue-500 focus:border-slate-400 block w-full pl-2 pr-1 py-1",
       value: "" + controlValue,
       min: "" + def.min,
       max: "" + def.max,

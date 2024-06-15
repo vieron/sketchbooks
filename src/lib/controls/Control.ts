@@ -1,3 +1,4 @@
+import debounce from "lodash/debounce";
 import type { ControlDef, ControlDefBase } from "./types";
 import { element } from "./utils";
 
@@ -24,24 +25,30 @@ export default class Control<
     return this.def.defaultValue;
   }
 
-  protected change(value: C["defaultValue"]) {
-    this.controlValue = value;
+  protected change = debounce(
+    (value: C["defaultValue"]) => {
+      this.controlValue = value;
 
-    if (typeof this.def.value === "function") {
-      this.controlValue = this.computeValue();
+      if (typeof this.def.value === "function") {
+        this.controlValue = this.computeValue();
+      }
+
+      // TODO: optimize
+      // if (this.value !== value) {
+      this.dispatchEvent(
+        new CustomEvent("control:change", {
+          detail: {
+            value,
+          },
+        })
+      );
+      // }
+    },
+    100,
+    {
+      trailing: true,
     }
-
-    // TODO: optimize
-    // if (this.value !== value) {
-    this.dispatchEvent(
-      new CustomEvent("control:change", {
-        detail: {
-          value,
-        },
-      })
-    );
-    // }
-  }
+  );
 
   render(el: HTMLElement): void {
     this.field = this.renderField(el);

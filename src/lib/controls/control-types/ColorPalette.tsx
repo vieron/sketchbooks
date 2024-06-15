@@ -1,7 +1,7 @@
 import palettes from "nice-color-palettes/200.json";
 import Control from "../Control";
 import type { ColorPaletteControlDef } from "../types";
-import { controlField, element } from "../utils";
+import { controlField, element, button } from "../utils";
 
 const DEFAULT_WEIGHT = 1;
 
@@ -21,6 +21,7 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
     return element("input", {
       type: "color",
       value: color,
+      className: "bg-slate-800",
       oninput: (event) => {
         const value = (event?.target as HTMLInputElement)?.value;
         const copy = [...this.controlValue];
@@ -31,68 +32,52 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
     });
   }
 
-  renderField(el: HTMLElement) {
+  renderField() {
     const { def, controlValue } = this;
 
     const colorPickers = controlValue.map(([_weight, color], index) =>
       this.createColorPicker(color, index)
     );
 
-    const buttonClass =
-      "mr-1 inline-block rounded border border-indigo-600 bg-transparent p-1 align-middle text-sm leading-none font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:text-white";
+    const add = button("+", {
+      className: "mr-1",
+      title: "Add a new color",
+      onclick: () => {
+        const newColor = "#fabada";
+        const node = this.createColorPicker(newColor, this.controlValue.length);
+        colors.appendChild(node);
 
-    const add = element(
-      "button",
-      {
-        className: buttonClass,
-        title: "Add a new color",
-        onclick: () => {
-          const newColor = "#fabada";
-          const node = this.createColorPicker(
-            newColor,
-            this.controlValue.length
-          );
-          colors.appendChild(node);
-
-          this.change([...this.controlValue, [DEFAULT_WEIGHT, newColor]]);
-        },
+        this.change([...this.controlValue, [DEFAULT_WEIGHT, newColor]]);
       },
-      ["+"]
-    );
-    const remove = element(
-      "button",
-      {
-        title: "Remove last color",
-        className: buttonClass,
-        onclick: () => {
-          colors.lastChild && colors.removeChild(colors.lastChild);
-          this.change(this.controlValue.slice(0, -1));
-        },
+    });
+
+    const remove = button("-", {
+      title: "Remove last color",
+      className: "mr-1",
+      onclick: () => {
+        colors.lastChild && colors.removeChild(colors.lastChild);
+        this.change(this.controlValue.slice(0, -1));
       },
-      ["-"]
-    );
-    const random = element(
-      "button",
-      {
-        title: "Pick a random palette",
-        className: buttonClass,
-        onclick: () => {
-          while (colors.lastChild) {
-            colors.removeChild(colors.lastChild);
-          }
+    });
 
-          const randomPalette = palettes[getRandomInt(0, palettes.length - 1)];
-          const weightedPalette = randomPalette.map((color, index) => {
-            colors.appendChild(this.createColorPicker(color, index));
+    const random = button("random", {
+      title: "Pick a random palette",
+      className: "mr-1",
+      onclick: () => {
+        while (colors.lastChild) {
+          colors.removeChild(colors.lastChild);
+        }
 
-            return [1, color] satisfies [number, string];
-          });
+        const randomPalette = palettes[getRandomInt(0, palettes.length - 1)];
+        const weightedPalette = randomPalette.map((color, index) => {
+          colors.appendChild(this.createColorPicker(color, index));
 
-          this.change(weightedPalette);
-        },
+          return [1, color] satisfies [number, string];
+        });
+
+        this.change(weightedPalette);
       },
-      ["random"]
-    );
+    });
 
     const colors = element(
       "div",

@@ -5,7 +5,8 @@ export type ControlDef =
   | ColorControlDef
   | ColorPaletteControlDef
   | BooleanControlDef
-  | ButtonControlDef;
+  | ButtonControlDef
+  | SelectControlDef;
 
 export type ControlsDef = Record<string, ControlDef>;
 
@@ -35,6 +36,11 @@ export interface RangeControlDef extends ControlDefBase<number> {
 
 export interface TextControlDef extends ControlDefBase<string> {
   type: "text";
+}
+
+export interface SelectControlDef extends ControlDefBase<string> {
+  type: "select";
+  options: string[];
 }
 
 export interface ColorControlDef extends ControlDefBase<string> {

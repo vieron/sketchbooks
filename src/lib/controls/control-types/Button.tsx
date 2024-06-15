@@ -1,6 +1,6 @@
 import Control from "../Control";
 import type { ButtonControlDef } from "../types";
-import { field, controlField, element } from "../utils";
+import { field, element } from "../utils";
 
 export default class ButtonControl extends Control<ButtonControlDef> {
   renderField() {
@@ -10,7 +10,7 @@ export default class ButtonControl extends Control<ButtonControlDef> {
       "button",
       {
         className:
-          "px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
+          "px-2 py-1 text-xs font-medium text-center text-white bg-slate-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
         onclick: (_event) => def.action(),
       },
       [def.name]

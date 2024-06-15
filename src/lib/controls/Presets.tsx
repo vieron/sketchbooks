@@ -1,6 +1,6 @@
-import Control from "../Control";
-import type { ControlsDef, PresetsDef } from "../types";
-import { controlField, element } from "../utils";
+import Control from "./Control";
+import type { ControlsDef, PresetsDef } from "./types";
+import { controlField, element } from "./utils";
 
 export default class Presets<C extends ControlsDef> extends EventTarget {
   public defs: PresetsDef<C>;
@@ -23,7 +23,7 @@ export default class Presets<C extends ControlsDef> extends EventTarget {
       "select",
       {
         className:
-          "px-2 py-2 text-xs font-medium text-center text-white border-r-8 border-r-blue-700 bg-blue-700 rounded-lg hover:bg-blue-800 hover:border-r-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
+          "px-1 py-1 text-xs font-medium text-center text-white border-r-4 border-r-blue-700 bg-blue-700 rounded-lg hover:bg-blue-800 hover:border-r-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
         // value: this.selectedPreset,
         onchange: (_event) => {
           const target = _event.target as HTMLSelectElement;

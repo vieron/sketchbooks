@@ -1,7 +1,9 @@
+type ChildrenNode = (Node | string)[];
+
 export function element<T extends keyof HTMLElementTagNameMap>(
   tagName: T,
   attrs?: Partial<HTMLElementTagNameMap[T]>,
-  children?: (Node | string)[]
+  children?: ChildrenNode
 ): HTMLElementTagNameMap[T] {
   const el = document.createElement(tagName);
 
@@ -34,11 +36,11 @@ export function element<T extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-export function field(children?: (Node | string)[]): HTMLDivElement {
+export function field(children?: ChildrenNode): HTMLDivElement {
   return element(
     "div",
     {
-      className: "mb-[1px] bg-white p-1 flex items-center gap-1",
+      className: "mb-[1px] p-1 flex items-center gap-1",
     },
     children ?? []
   );
@@ -46,12 +48,12 @@ export function field(children?: (Node | string)[]): HTMLDivElement {
 
 export function controlField(
   labelText: string,
-  children?: (Node | string)[]
+  children?: ChildrenNode
 ): HTMLElementTagNameMap["div"] {
   const label = element(
     "label",
     {
-      className: "shrink-0 grow-0 font-light text-xs text-black w-1/4",
+      className: "shrink-0 grow-0 font-light text-xs text-white w-1/4",
     },
     [labelText]
   );
@@ -59,7 +61,8 @@ export function controlField(
   const field = element(
     "div",
     {
-      className: "mb-[1px] bg-white p-1 flex items-center gap-1",
+      className: "mb-[1px] p-1 flex items-center gap-1",
+      lang: "en",
     },
     [
       label,
@@ -74,4 +77,23 @@ export function controlField(
   );
 
   return field;
+}
+
+export function button(
+  text: string,
+  props: Partial<HTMLElementTagNameMap["button"]>
+) {
+  return element(
+    "button",
+    {
+      ...props,
+      className: [
+        "inline-block rounded bg-slate-700 text-slate-300 py-1 px-2 align-middle text-sm leading-none font-medium hover:bg-blue-600 hover:text-white focus:outline-none focus:ring active:text-white",
+        props.className,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    },
+    [text]
+  );
 }

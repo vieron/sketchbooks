@@ -8,62 +8,43 @@ type Options = {
   strokeWidth?: number;
   lineWeight?: number;
   fgPalette?: [number, string][];
-  skipPoint?: (point: p5.Vector) => boolean;
+  tension?: number;
 };
 
 export function drawHobbyLines(
   p: p5,
-  points: p5.Vector[],
+  lines: p5.Vector[][],
   {
-    pointsPerLine = () => 2,
     strokeColor = p.color("black"),
     strokeWidth = 2,
     lineWeight = 10,
     fgPalette = [[1, "red"]],
-    skipPoint = () => false,
+    tension = 0.8,
   }: Options
-) {
-  let currentLine: p5.Vector[] = [];
-  let localPointsPerLine: number = pointsPerLine();
-
+): void {
   // draw lines
-  for (var i = 0; i < points.length; i++) {
-    const point = points[i];
+  lines.forEach((line) => {
+    const hobbyPoints = createHobbyBezier(line, {
+      tension: tension,
+      cyclic: false,
+    });
 
-    if (skipPoint(point)) {
-      continue;
-    }
+    // background line
+    drawLine(p, {
+      strokeColor: strokeColor,
+      strokeWeight: lineWeight + strokeWidth * 2,
+      origin: line[0],
+      points: hobbyPoints,
+    });
 
-    currentLine.push(point);
-
-    // draw lines when it reaches the desired number of points
-    if (currentLine.length === localPointsPerLine) {
-      const hobbyPoints = createHobbyBezier(currentLine, {
-        tension: p.random(0.8, 1),
-        cyclic: false,
-      });
-
-      // background line
-      drawLine(p, {
-        strokeColor: strokeColor,
-        strokeWeight: lineWeight + strokeWidth * 2,
-        origin: currentLine[0],
-        points: hobbyPoints,
-      });
-
-      // foreground line
-      drawLine(p, {
-        strokeColor: chooseWeighted(p, fgPalette),
-        strokeWeight: lineWeight,
-        origin: currentLine[0],
-        points: hobbyPoints,
-      });
-
-      // empty line
-      currentLine = [];
-      localPointsPerLine = pointsPerLine();
-    }
-  }
+    // foreground line
+    drawLine(p, {
+      strokeColor: chooseWeighted(p, fgPalette),
+      strokeWeight: lineWeight,
+      origin: line[0],
+      points: hobbyPoints,
+    });
+  });
 }
 
 interface BezierPoint {

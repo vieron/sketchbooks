@@ -5,8 +5,9 @@ import Sketch from "../../../layouts/Sketch.astro";
 <Sketch title="003 Line">
   <script>
     import type p5 from "p5";
-    import palettes from "nice-color-palettes/200.json";
-    import poissonDisk from "../../../sketch-utils/poisson-disk";
+    import poissonDisk, {
+      type PointsGrid,
+    } from "../../../sketch-utils/poisson-disk";
     import { chooseWeighted } from "../../../sketch-utils/random";
     import {
       createTextImage,
@@ -15,6 +16,95 @@ import Sketch from "../../../layouts/Sketch.astro";
     import type { FontAttributes } from "../../../sketch-utils/type";
     import { drawHobbyLines } from "../../../sketch-utils/hobby-lines";
     import Controls from "../../../lib/controls/Controls";
+
+    const LINE_GROUPING = {
+      procedural: (_grid: PointsGrid, points: p5.Vector[]) => {
+        let currentLine: p5.Vector[] = [];
+        let localPointsPerLine: number = 3;
+
+        return points.reduce<p5.Vector[][]>((lines, point) => {
+          currentLine.push(point);
+
+          // end current line when it reaches the desired number of points
+          if (currentLine.length === localPointsPerLine) {
+            lines.push(currentLine);
+            currentLine = [];
+          }
+
+          return lines;
+        }, []);
+      },
+      horizontal: (
+        grid: PointsGrid,
+        _points: p5.Vector[],
+        { rows, cols }: { rows: number; cols: number }
+      ): p5.Vector[][] => {
+        const lines: p5.Vector[][] = [];
+        let currentLine: p5.Vector[] = [];
+
+        function endLine() {
+          if (currentLine.length < 2) {
+            currentLine = [];
+            return;
+          }
+
+          lines.push(currentLine);
+          currentLine = [];
+        }
+
+        for (let j = 0; j < rows; j++) {
+          for (let i = 0; i < cols; i++) {
+            const point = grid[i + j * cols];
+
+            if (point) {
+              currentLine.push(point);
+            } else if (point === null) {
+              // skip points speficically ignored
+              endLine();
+            }
+          }
+
+          endLine();
+        }
+
+        return lines;
+      },
+      vertical: (
+        grid: PointsGrid,
+        _points: p5.Vector[],
+        { rows, cols }: { rows: number; cols: number }
+      ): p5.Vector[][] => {
+        const lines: p5.Vector[][] = [];
+        let currentLine: p5.Vector[] = [];
+
+        function endLine() {
+          if (currentLine.length < 2) {
+            currentLine = [];
+            return;
+          }
+
+          lines.push(currentLine);
+          currentLine = [];
+        }
+
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            const point = grid[i + j * cols];
+
+            if (point) {
+              currentLine.push(point);
+            } else if (point === null) {
+              // skip points speficically ignored
+              endLine();
+            }
+          }
+
+          endLine();
+        }
+
+        return lines;
+      },
+    };
 
     window.sketch = (p) => {
       // poisson disc
@@ -56,11 +146,17 @@ import Sketch from "../../../layouts/Sketch.astro";
             radius: {
               name: "Min. points distance",
               type: "range",
-              defaultValue: 12,
+              defaultValue: 8,
               min: 1,
               max: 100,
               value: (controlValue) =>
-                p.map(p.width, 300, 2000, 1.5, controlValue),
+                p.floor(p.map(p.width, 300, 2000, 1, controlValue)),
+            },
+            grouping: {
+              name: "Grouping",
+              type: "select",
+              defaultValue: "procedural" as keyof typeof LINE_GROUPING,
+              options: Object.keys(LINE_GROUPING),
             },
             // tries: {
             //   name: "Tries",
@@ -71,15 +167,23 @@ import Sketch from "../../../layouts/Sketch.astro";
             // },
 
             // lines
+            lineTension: {
+              name: "Line tension",
+              type: "range",
+              defaultValue: 1,
+              min: 0.1,
+              max: 1.0,
+              step: 0.1,
+            },
             lineWeight: {
               name: "Line weight",
               type: "range",
-              defaultValue: 18,
+              defaultValue: 15,
               min: 0.2,
               max: 100,
               step: 0.2,
               value: (controlValue) =>
-                p.map(p.width, 300, 2000, 2, controlValue),
+                +p.map(p.width, 300, 2000, 2, controlValue).toFixed(1),
             },
             pointsPerLine: {
               name: "Line length",
@@ -98,11 +202,14 @@ import Sketch from "../../../layouts/Sketch.astro";
               //   p.floor(p.random(0, palettes.length - 1))
               // ].map((color) => [1, color]),
             },
+            // walker: {
+
+            // },
 
             strokeWidth: {
               name: "Stroke width",
               type: "range",
-              defaultValue: 1.4,
+              defaultValue: 0,
               min: 0,
               max: 80,
               step: 0.2,
@@ -202,7 +309,6 @@ import Sketch from "../../../layouts/Sketch.astro";
         text = o.text.value;
         lineWeight = o.lineWeight.value;
         strokeWidth = o.strokeWidth.value; //px
-        pointsPerLine = o.pointsPerLine.value;
         marginRange = [20, 80];
 
         // computed params
@@ -220,7 +326,7 @@ import Sketch from "../../../layouts/Sketch.astro";
         ]);
         fontWeight = 900;
 
-        angleVariation = p.QUARTER_PI / 10;
+        angleVariation = 0;
         margin = p.map(p.width, 300, 4000, marginRange[0], marginRange[1]);
 
         // init
@@ -246,17 +352,17 @@ import Sketch from "../../../layouts/Sketch.astro";
         //
         if (false) {
           const bgOffset = 100;
-          const bgPoints = poissonDisk(p, {
+          const { grid, points, extra } = poissonDisk(p, {
             radius: 5,
             tries: 30,
             width: p.width + bgOffset * 2,
             height: p.height + bgOffset * 2,
           });
+          const lines = LINE_GROUPING[o.grouping.value](grid, points, extra);
 
           p.push();
           p.translate(-bgOffset, -bgOffset);
-          drawHobbyLines(p, bgPoints, {
-            pointsPerLine: () => o.pointsPerLine.value,
+          drawHobbyLines(p, lines, {
             strokeColor: p.color(bgColor),
             strokeWidth: 2,
             lineWeight: 3,
@@ -268,22 +374,37 @@ import Sketch from "../../../layouts/Sketch.astro";
         //
         // COMPUTE LETTERS
         //
+
         const letters = text.split("").map((char, i) => {
           img = createTextImage({
             textSample: char,
             ...fontAttributes,
           });
 
-          const points = poissonDisk(p, {
+          const { grid, points, extra } = poissonDisk(p, {
             radius,
             tries,
             width: img.width,
             height: img.height,
+            skipPoint: (point) => {
+              const index =
+                Math.floor(
+                  Math.floor(point.y) * img.width + Math.floor(point.x)
+                ) * 4;
+              const alpha = img.data[index + 3];
+
+              // discard points outside of typography shape
+              if (alpha === 0 || typeof alpha === "undefined") {
+                return true;
+              }
+
+              return false;
+            },
           });
 
           return {
             img,
-            points,
+            lines: LINE_GROUPING[o.grouping.value](grid, points, extra),
           };
         });
 
@@ -304,7 +425,7 @@ import Sketch from "../../../layouts/Sketch.astro";
         p.translate(baseX, baseY);
         let xOffset = 0;
 
-        letters.forEach(({ img, points }, i) => {
+        letters.forEach(({ img, lines }, i) => {
           p.push();
           p.translate(xOffset, 0);
 
@@ -314,26 +435,12 @@ import Sketch from "../../../layouts/Sketch.astro";
           p.translate(-img.width / 2, -img.height / 2);
 
           // draw letter
-          drawHobbyLines(p, points, {
-            pointsPerLine: () => o.pointsPerLine.value,
+          drawHobbyLines(p, lines, {
             strokeColor,
             strokeWidth,
             lineWeight,
             fgPalette: o.lineColorPalette.value,
-            skipPoint: (point) => {
-              const index =
-                Math.floor(
-                  Math.floor(point.y) * img.width + Math.floor(point.x)
-                ) * 4;
-              const alpha = img.data[index + 3];
-
-              // discard points outside of typography shape
-              if (alpha === 0 || typeof alpha === "undefined") {
-                return true;
-              }
-
-              return false;
-            },
+            tension: o.lineTension.value,
           });
           p.pop();
 

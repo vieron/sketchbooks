@@ -7,7 +7,8 @@ import TextControl from "./control-types/Text";
 import ButtonControl from "./control-types/Button";
 import type { ControlDef, ControlsDef, PresetsDef } from "./types";
 import ColorPaletteControl from "./control-types/ColorPalette";
-import Presets from "./control-types/Presets";
+import Presets from "./Presets";
+import SelectControl from "./control-types/Select";
 
 type SubscribeFn = (value: Record<string, any>) => void;
 
@@ -68,6 +69,8 @@ export default class Controls<C extends ControlsDef> {
         return new BooleanControl(def);
       case "button":
         return new ButtonControl(def);
+      case "select":
+        return new SelectControl(def);
 
       default:
         throw new Error(`Unsupported control type: ${type}`);
