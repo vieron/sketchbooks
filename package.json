@@ -26,6 +26,7 @@
     "nice-color-palettes": "^2.0.0",
     "p5": "^1.9.4",
     "poisson-disk-sampling": "^2.3.1",
+    "query-string": "^9.0.0",
     "riso-colors": "^1.0.1",
     "tailwindcss": "^3.4.4",
     "tweakpane": "^4.0.3",
