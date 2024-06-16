@@ -48,7 +48,7 @@ export default class Sketch {
       throw new Error(`Element with id "${this.id}" not found`);
     }
 
-    this.p5El.classList.add("grow", "shrink");
+    this.p5El.classList.add("grow", "shrink", "min-w-[400px]");
     this.el.appendChild(this.p5El);
 
     try {
