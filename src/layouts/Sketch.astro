@@ -9,9 +9,7 @@ const { title } = Astro.props;
 ---
 
 <Layout title={title}>
-  <div class="relative flex h-screen w-screen">
-    <div id="p5-sketch" class="h-full w-full flex"></div>
-  </div>
+  <div id="p5-sketch" class="h-screen w-screen flex"></div>
   <slot />
   <style is:global>
     canvas {
@@ -20,7 +18,6 @@ const { title } = Astro.props;
   </style>
   <script>
     import Sketch, { type UserSketch } from "../lib/sketch/Sketch";
-    import type { ControlsDef } from "../lib/controls/types";
 
     declare global {
       interface Window {
@@ -30,6 +27,10 @@ const { title } = Astro.props;
       }
     }
 
-    new Sketch(window.sketch ?? (() => {}));
+    const sketch = new Sketch(window.sketch ?? (() => {}));
+
+    window.addEventListener("DOMContentLoaded", () => {
+      sketch.init();
+    });
   </script>
 </Layout>

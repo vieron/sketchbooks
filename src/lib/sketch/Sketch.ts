@@ -37,13 +37,9 @@ export default class Sketch {
 
     this.p5El = document.createElement("div");
     this.controlsEl = document.createElement("div");
-
-    window.addEventListener("DOMContentLoaded", () => {
-      this.init();
-    });
   }
 
-  private init() {
+  public init() {
     this.el = document.getElementById(this.id) as HTMLDivElement | null;
 
     if (!this.el) {
