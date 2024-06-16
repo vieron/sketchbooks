@@ -4,11 +4,21 @@ interface Props {
   width?: string;
   height?: string;
   aspectRatio?: string;
+  preset?: string;
 }
 
-const { id, width = "100%", height, aspectRatio = "16/9" } = Astro.props;
+const {
+  id,
+  width = "100%",
+  height,
+  aspectRatio = "16/9",
+  preset,
+} = Astro.props;
 
-const url = `/sketch/${id}`;
+import queryString from "query-string";
+
+const iframeSrc = `/sketch/${id}?${queryString.stringify({ preview: 1, preset })}`;
+const linkUrl = `/sketch/${id}?${queryString.stringify({ preset })}`;
 ---
 
 <figure>
@@ -17,10 +27,10 @@ const url = `/sketch/${id}`;
       id={id}
       width="100%"
       height="100%"
-      src={url}
+      src={iframeSrc}
       style={{ frameborder: 0 }}
     >
     </iframe>
   </div>
-  <p class="text-right"><a href={url} target="_blank">Open sketch ↗</a></p>
+  <p class="text-right"><a href={linkUrl} target="_blank">Open sketch ↗</a></p>
 </figure>

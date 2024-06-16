@@ -6,14 +6,14 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import p5 from "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       const particleCount = 10000;
       const noiseScale = 0.0015;
       const offScreen = 300;
       let particles: p5.Vector[] = [];
 
       p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
 
         for (let i = 0; i < particleCount; i++) {
           particles.push(

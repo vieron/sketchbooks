@@ -6,11 +6,11 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import p5 from "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       const noiseScale = 0.004;
 
       p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
       };
 
       function drawArrow(base: p5.Vector, vec: p5.Vector, myColor: p5.Color) {

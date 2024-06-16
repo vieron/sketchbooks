@@ -12,7 +12,7 @@ import Sketch from "../../../layouts/Sketch.astro";
     import type { FontAttributes } from "../../../sketch-utils/type";
     import { createP5Image } from "../../../sketch-utils/image";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       // poisson disc
       let tries: number;
       let radius: number;
@@ -27,7 +27,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
       p.setup = () => {
         p.noLoop();
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         p.strokeWeight(4);
         p.colorMode(p.HSB);
         p.frameRate(framesPerSecond);

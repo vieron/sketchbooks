@@ -9,13 +9,8 @@ const { title } = Astro.props;
 ---
 
 <Layout title={title}>
-  <div class="relative">
-    <div id="p5-sketch"></div>
-    <div
-      id="sketch-controls"
-      class="empty:hidden transition-transform transform-gpu translate-x-[85%] right-0 top-0 hover:translate-x-0 w-[350px] h-screen fixed z-10 p-2 overflow-y-auto bg-slate-50/80"
-    >
-    </div>
+  <div class="relative flex h-screen w-screen">
+    <div id="p5-sketch" class="h-full w-full flex"></div>
   </div>
   <slot />
   <style is:global>
@@ -24,40 +19,17 @@ const { title } = Astro.props;
     }
   </style>
   <script>
-    import p5 from "p5";
-
-    type Sketch = (p: p5) => void;
+    import Sketch, { type UserSketch } from "../lib/sketch/Sketch";
+    import type { ControlsDef } from "../lib/controls/types";
 
     declare global {
       interface Window {
-        sketch: Sketch;
-
+        sketch: UserSketch;
         // our own sketch handlers
         onCanvasResize: () => void;
       }
     }
 
-    function initP5() {
-      try {
-        // import the p5 and p5-sounds client-side
-        // const p5 = (await import("p5")).default;
-        const sketch = window.sketch ?? (() => {});
-
-        new p5(
-          (p) => sketch(p),
-          document.getElementById("p5-sketch") as HTMLElement
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    async function init() {
-      initP5();
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      init();
-    });
+    new Sketch(window.sketch ?? (() => {}));
   </script>
 </Layout>

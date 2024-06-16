@@ -10,9 +10,9 @@ import Sketch from "../../../layouts/Sketch.astro";
     let center: Vector;
     let mouse: Vector;
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
 
         center = p.createVector(p.width / 2, p.height / 2);
         mouse = p.createVector(p.width / 3, p.height / 3);

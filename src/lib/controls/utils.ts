@@ -50,22 +50,20 @@ export function controlField(
   labelText: string,
   children?: ChildrenNode
 ): HTMLElementTagNameMap["div"] {
-  const label = element(
-    "label",
-    {
-      className: "shrink-0 grow-0 font-light text-xs text-white w-1/4",
-    },
-    [labelText]
-  );
-
   const field = element(
     "div",
     {
-      className: "mb-[1px] p-1 flex items-center gap-1",
+      className: "mb-[1px] p-1 flex items-center gap-2",
       lang: "en",
     },
     [
-      label,
+      element(
+        "label",
+        {
+          className: "shrink-0 grow-0 font-light text-xs text-slate-300 w-1/4",
+        },
+        [labelText]
+      ),
       element(
         "div",
         {
@@ -88,7 +86,7 @@ export function button(
     {
       ...props,
       className: [
-        "inline-block rounded bg-slate-700 text-slate-300 py-1 px-2 align-middle text-sm leading-none font-medium hover:bg-blue-600 hover:text-white focus:outline-none focus:ring active:text-white",
+        "inline-block rounded bg-slate-700 text-slate-200 py-1 px-2 align-middle text-xs leading-none font-medium hover:bg-blue-600 hover:text-slate-200 focus:outline-none focus:ring active:text-white",
         props.className,
       ]
         .filter(Boolean)

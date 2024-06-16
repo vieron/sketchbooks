@@ -6,54 +6,133 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import p5 from "p5";
     import { createHobbyBezier } from "hobby-curve";
+    import { drawHobbyLines } from "../../../sketch-utils/hobby-lines";
 
-    window.sketch = (p) => {
-      // poisson disc
-      let tries: number;
-      let radius: number;
-      let lineWeight: number;
-
-      let cellSize: number;
-      let gridWidth: number;
-      let gridHeight: number;
-      let margin: number;
-
-      let grid: (undefined | p5.Vector)[] = [];
-      const active: p5.Vector[] = [];
-      const ordered: p5.Vector[] = [];
-      let cols: number, rows: number;
-
+    window.sketch = (p, container, queryParams, { createControls }) => {
       // general params
       const framesPerSecond = 1;
       const stepsPerFrame = 20000;
 
       const pointsPerLine = [3, 3];
-      const strokeMultiplier = 1.4;
       const marginRange = [20, 140];
       let hue: number;
 
+      const c = createControls({
+        controls: {
+          radius: {
+            name: "Min. points distance",
+            type: "range",
+            defaultValue: 38,
+            min: 1,
+            max: 100,
+            value: (controlValue) =>
+              p.floor(p.map(p.width, 300, 2000, 1, controlValue)),
+          },
+          lineWeight: {
+            name: "Line weight",
+            type: "range",
+            defaultValue: 15,
+            min: 0.2,
+            max: 100,
+            step: 0.2,
+            value: (controlValue) =>
+              +p.map(p.width, 300, 2000, 2, controlValue).toFixed(1),
+          },
+          lineTension: {
+            name: "Line tension",
+            type: "range",
+            defaultValue: 1,
+            min: 0.1,
+            max: 1.0,
+            step: 0.1,
+          },
+          lineColorPalette: {
+            name: "Line color palette",
+            type: "colorpalette",
+            defaultValue: ["#2B2E4A", "#E84545", "#903749", "#53354A"].map(
+              (color) => [1, color]
+            ),
+            // defaultValue: palettes[
+            //   p.floor(p.random(0, palettes.length - 1))
+            // ].map((color) => [1, color]),
+          },
+
+          strokeWidth: {
+            name: "Stroke width",
+            type: "range",
+            defaultValue: 0,
+            min: 0,
+            max: 80,
+            step: 0.2,
+          },
+          strokeColor: {
+            name: "Stroke color",
+            type: "color",
+            defaultValue: "#FFFFFF",
+          },
+
+          bgColor: {
+            name: "Background color",
+            type: "color",
+            defaultValue: "#FFFFFF",
+          },
+          // showBackground: {
+          //   name: "Show background",
+          //   type: "boolean",
+          //   defaultValue: false,
+          // },
+
+          // actions
+          actions: {
+            name: "Actions",
+            type: "buttons",
+            defaultValue: null,
+            actions: [
+              {
+                name: "Save image",
+                action: () => {
+                  const filename = `${Date.now()}.png`;
+
+                  p.save(filename);
+                },
+              },
+              {
+                name: "Redraw",
+                action: () => p.draw(),
+              },
+            ],
+          },
+        },
+      });
+
       p.setup = () => {
         p.noLoop();
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         p.strokeWeight(4);
         p.colorMode(p.HSB);
         p.frameRate(framesPerSecond);
 
+        c.init();
+      };
+
+      p.draw = () => {
+        let grid: (undefined | p5.Vector)[] = [];
+        const active: p5.Vector[] = [];
+        const ordered: p5.Vector[] = [];
+
         // params
-        radius = p.floor(p.random(10, 15));
-        tries = 30;
-        lineWeight = radius * 0.85;
-        hue = p.floor(p.random(100, 200));
+        let radius = c.controls.radius.value;
+        let tries = 30;
 
         // computed params
-        cellSize = radius / Math.sqrt(2); // cell width;
-        margin = p.map(p.width, 0, 4000, marginRange[0], marginRange[1]);
-        gridWidth = p.width - margin * 2;
-        gridHeight = p.height - margin * 2;
+        const cellSize = radius / Math.sqrt(2); // cell width;
+        const margin = p.map(p.width, 0, 4000, marginRange[0], marginRange[1]);
+        const gridWidth = p.width - margin * 2;
+        const gridHeight = p.height - margin * 2;
 
         // STEP 0
-        cols = p.floor(gridWidth / cellSize);
-        rows = p.floor(gridHeight / cellSize);
+        const cols = p.floor(gridWidth / cellSize);
+        const rows = p.floor(gridHeight / cellSize);
         for (let i = 0; i < cols * rows; i++) {
           grid[i] = undefined;
         }
@@ -61,17 +140,17 @@ import Sketch from "../../../layouts/Sketch.astro";
         // STEP 1
         const x = gridWidth / 2;
         const y = gridHeight / 2;
-        const i = p.floor(x / cellSize);
-        const j = p.floor(y / cellSize);
+        const j = p.floor(x / cellSize);
+        const k = p.floor(y / cellSize);
         const pos = p.createVector(x, y);
 
-        grid[i + j * cols] = pos;
+        grid[j + k * cols] = pos;
 
         active.push(pos);
-      };
 
-      p.draw = () => {
-        p.background(255);
+        // start
+        p.background(p.color(c.controls.bgColor.value));
+        p.push();
         p.translate(margin, margin);
 
         for (var steps = 0; steps < stepsPerFrame; steps++) {
@@ -153,57 +232,12 @@ import Sketch from "../../../layouts/Sketch.astro";
           currentLine.push(point);
 
           if (currentLine.length === localPointsPerLine) {
-            const hobbyPoints = createHobbyBezier(currentLine, {
-              tension: 1,
-              cyclic: false,
+            drawHobbyLines(p, [currentLine], {
+              strokeColor: p.color(c.controls.strokeColor.value),
+              strokeWidth: c.controls.strokeWidth.value,
+              fgPalette: c.controls.lineColorPalette.value,
+              tension: c.controls.lineTension.value,
             });
-
-            // first and last point
-            // fill(0, 0, 0);
-            // noStroke();
-            // circle(currentLine[0].x, currentLine[0].y, lineWeight * 1.6);
-            // circle(
-            //   currentLine[localPointsPerLine - 1].x,
-            //   currentLine[localPointsPerLine - 1].y,
-            //   lineWeight * 1.6
-            // );
-
-            // background line
-            p.noFill();
-            p.stroke(0, 0, 0, 0.6);
-            p.strokeWeight(lineWeight * strokeMultiplier);
-            p.beginShape();
-            p.vertex(currentLine[0].x, currentLine[0].y);
-            hobbyPoints.forEach(({ startControl, endControl, point }) => {
-              p.bezierVertex(
-                startControl.x,
-                startControl.y,
-                endControl.x,
-                endControl.y,
-                point.x,
-                point.y
-              );
-            });
-            p.endShape();
-
-            // foreground line
-            p.noFill();
-            p.stroke(hue, i % 255, p.floor(p.random(100, 244)));
-            // stroke(color(random(255), random(255), random(255)));
-            p.strokeWeight(lineWeight);
-            p.beginShape();
-            p.vertex(currentLine[0].x, currentLine[0].y);
-            hobbyPoints.forEach(({ startControl, endControl, point }) => {
-              p.bezierVertex(
-                startControl.x,
-                startControl.y,
-                endControl.x,
-                endControl.y,
-                point.x,
-                point.y
-              );
-            });
-            p.endShape();
 
             // empty line
             localPointsPerLine = p.floor(
@@ -212,6 +246,7 @@ import Sketch from "../../../layouts/Sketch.astro";
             currentLine = [];
           }
         }
+        p.pop();
       };
     };
   </script>

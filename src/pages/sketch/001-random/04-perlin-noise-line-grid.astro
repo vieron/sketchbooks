@@ -6,7 +6,7 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       const xVariation = 40;
       const yVariation = 5;
       const noiseScale = 0.0035;
@@ -30,7 +30,7 @@ import Sketch from "../../../layouts/Sketch.astro";
         lines = p.map(p.windowWidth, minWindowWidth, maxWindowWidth, 2, 18);
 
         p.noLoop();
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
       };
 
       function drawLines(

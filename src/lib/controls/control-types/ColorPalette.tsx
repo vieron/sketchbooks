@@ -81,7 +81,7 @@ export default class ColorPaletteControl extends Control<ColorPaletteControlDef>
 
     const colors = element(
       "div",
-      { className: "flex align-items" },
+      { className: "flex flex-wrap align-items" },
       colorPickers
     );
     const controls = element("div", { className: "basis-full shrink-0" }, [

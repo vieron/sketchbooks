@@ -6,14 +6,14 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       let noiseMax = 1; // between 0 and 10
       let phase = 0;
       let zoff = 0;
 
       p.setup = () => {
         // noLoop();
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
       };
 
       p.draw = () => {

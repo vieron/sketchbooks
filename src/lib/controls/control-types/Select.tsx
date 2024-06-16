@@ -14,7 +14,7 @@ export default class SelectControl extends Control<SelectControlDef> {
       "select",
       {
         className:
-          "px-1 py-1 text-xs font-medium text-slate-300 border-r-4 border-r-slate-700 bg-slate-700 rounded-lg hover:bg-slate-600 hover:border-r-slate-600 focus:ring-4 focus:outline-none focus:ring-blue-300",
+          "px-1 py-1 text-xs font-medium text-slate-200 border-r-4 border-r-slate-700 bg-slate-700 rounded-lg hover:bg-slate-600 hover:border-r-slate-600 focus:ring-4 focus:outline-none focus:ring-blue-300",
         value: controlValue,
         onchange: (event) => {
           const target = event.target as HTMLSelectElement;

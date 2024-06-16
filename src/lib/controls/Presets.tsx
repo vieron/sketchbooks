@@ -6,12 +6,11 @@ export default class Presets<C extends ControlsDef> extends EventTarget {
   public defs: PresetsDef<C>;
   private selectedPreset: string;
 
-  constructor(presets: PresetsDef<C>) {
+  constructor(presets: PresetsDef<C>, selectedPreset?: keyof PresetsDef<C>) {
     super();
 
     this.defs = presets;
-
-    this.selectedPreset = Object.keys(this.defs)[0];
+    this.selectedPreset = selectedPreset ?? Object.keys(this.defs)[0];
   }
 
   render(el: HTMLElement): HTMLElement | undefined {
@@ -24,7 +23,6 @@ export default class Presets<C extends ControlsDef> extends EventTarget {
       {
         className:
           "px-1 py-1 text-xs font-medium text-center text-white border-r-4 border-r-blue-700 bg-blue-700 rounded-lg hover:bg-blue-800 hover:border-r-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
-        // value: this.selectedPreset,
         onchange: (_event) => {
           const target = _event.target as HTMLSelectElement;
           this.selectedPreset = target.value;

@@ -6,7 +6,7 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       let noiseMax = 0.6; // between 0 and 10
       let phase = 0;
       let zoff = 0;
@@ -15,7 +15,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       p.setup = () => {
         radiusVariation = Math.min(p.windowWidth, p.windowHeight) * 0.4;
 
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         p.frameRate(26);
         p.background(p.color("#fca311"));
       };

@@ -15,7 +15,6 @@ import Sketch from "../../../layouts/Sketch.astro";
     } from "../../../sketch-utils/type";
     import type { FontAttributes } from "../../../sketch-utils/type";
     import { drawHobbyLines } from "../../../sketch-utils/hobby-lines";
-    import Controls from "../../../lib/controls/Controls";
 
     const LINE_GROUPING = {
       procedural: (_grid: PointsGrid, points: p5.Vector[]) => {
@@ -106,7 +105,7 @@ import Sketch from "../../../layouts/Sketch.astro";
       },
     };
 
-    window.sketch = (p) => {
+    window.sketch = (p, container, urlParams, { createControls }) => {
       // poisson disc
       let tries: number;
       let radius: number;
@@ -132,157 +131,156 @@ import Sketch from "../../../layouts/Sketch.astro";
       let angleVariation: number;
       let font: p5.Font;
 
-      const c = new Controls(
-        {
-          controls: {
-            // text
-            text: {
-              name: "Text",
-              type: "text",
-              defaultValue: "FORM",
-            },
-
-            // points
-            radius: {
-              name: "Min. points distance",
-              type: "range",
-              defaultValue: 8,
-              min: 1,
-              max: 100,
-              value: (controlValue) =>
-                p.floor(p.map(p.width, 300, 2000, 1, controlValue)),
-            },
-            grouping: {
-              name: "Grouping",
-              type: "select",
-              defaultValue: "procedural" as keyof typeof LINE_GROUPING,
-              options: Object.keys(LINE_GROUPING),
-            },
-            // tries: {
-            //   name: "Tries",
-            //   type: "range",
-            //   defaultValue: 30,
-            //   min: 1,
-            //   max: 3000,
-            // },
-
-            // lines
-            lineTension: {
-              name: "Line tension",
-              type: "range",
-              defaultValue: 1,
-              min: 0.1,
-              max: 1.0,
-              step: 0.1,
-            },
-            lineWeight: {
-              name: "Line weight",
-              type: "range",
-              defaultValue: 15,
-              min: 0.2,
-              max: 100,
-              step: 0.2,
-              value: (controlValue) =>
-                +p.map(p.width, 300, 2000, 2, controlValue).toFixed(1),
-            },
-            pointsPerLine: {
-              name: "Line length",
-              type: "range",
-              defaultValue: 3,
-              min: 2,
-              max: 360,
-            },
-            lineColorPalette: {
-              name: "Line color palette",
-              type: "colorpalette",
-              defaultValue: ["#2B2E4A", "#E84545", "#903749", "#53354A"].map(
-                (color) => [1, color]
-              ),
-              // defaultValue: palettes[
-              //   p.floor(p.random(0, palettes.length - 1))
-              // ].map((color) => [1, color]),
-            },
-            // walker: {
-
-            // },
-
-            strokeWidth: {
-              name: "Stroke width",
-              type: "range",
-              defaultValue: 0,
-              min: 0,
-              max: 80,
-              step: 0.2,
-            },
-            strokeColor: {
-              name: "Stroke color",
-              type: "color",
-              defaultValue: "#FFFFFF",
-            },
-
-            // background
-            bgColor: {
-              name: "Background color",
-              type: "color",
-              defaultValue: "#FFFFFF",
-            },
-            // showBackground: {
-            //   name: "Show background",
-            //   type: "boolean",
-            //   defaultValue: false,
-            // },
-
-            // actions
-            saveScreenshot: {
-              name: "Save image",
-              type: "button",
-              defaultValue: null,
-              action: () => {
-                const filename = `${Date.now()}.png`;
-
-                p.save(filename);
-              },
-            },
-            redraw: {
-              name: "Redraw",
-              type: "button",
-              defaultValue: null,
-              action: () => p.draw(),
-            },
+      const c = createControls({
+        controls: {
+          // text
+          text: {
+            name: "Text",
+            type: "text",
+            defaultValue: "FORM",
           },
-          presets: {
-            Default: {},
-            Minimal: {
-              radius: 5,
-              lineWeight: 1,
-            },
-            Dark: {
-              radius: 15,
-              lineWeight: 17,
-              pointsPerLine: 3,
-              lineColorPalette: [[1, "#000000"]],
-              strokeWidth: 0.8,
-              strokeColor: "#FFFFFF",
-              bgColor: "#000000",
-            },
-            Scribble: {
-              radius: 8,
-              lineWeight: 3,
-              pointsPerLine: 20,
-              lineColorPalette: [
-                [1, "#FFA200"],
-                [0.3, "#000000"],
-              ],
-              strokeWidth: 0,
-              strokeColor: "#FFFFFF",
-              bgColor: "#FFFFFF",
-            },
+
+          // points
+          radius: {
+            name: "Min. points distance",
+            type: "range",
+            defaultValue: 8,
+            min: 1,
+            max: 100,
+            value: (controlValue) =>
+              p.floor(p.map(p.width, 300, 2000, 1, controlValue)),
+          },
+          grouping: {
+            name: "Grouping",
+            type: "select",
+            defaultValue: "procedural" as keyof typeof LINE_GROUPING,
+            options: Object.keys(LINE_GROUPING),
+          },
+          // tries: {
+          //   name: "Tries",
+          //   type: "range",
+          //   defaultValue: 30,
+          //   min: 1,
+          //   max: 3000,
+          // },
+
+          // lines
+          lineTension: {
+            name: "Line tension",
+            type: "range",
+            defaultValue: 1,
+            min: 0.1,
+            max: 1.0,
+            step: 0.1,
+          },
+          lineWeight: {
+            name: "Line weight",
+            type: "range",
+            defaultValue: 15,
+            min: 0.2,
+            max: 100,
+            step: 0.2,
+            value: (controlValue) =>
+              +p.map(p.width, 300, 2000, 2, controlValue).toFixed(1),
+          },
+          pointsPerLine: {
+            name: "Line length",
+            type: "range",
+            defaultValue: 3,
+            min: 2,
+            max: 360,
+          },
+          lineColorPalette: {
+            name: "Line color palette",
+            type: "colorpalette",
+            defaultValue: ["#2B2E4A", "#E84545", "#903749", "#53354A"].map(
+              (color) => [1, color]
+            ),
+            // defaultValue: palettes[
+            //   p.floor(p.random(0, palettes.length - 1))
+            // ].map((color) => [1, color]),
+          },
+          // walker: {
+
+          // },
+
+          strokeWidth: {
+            name: "Stroke width",
+            type: "range",
+            defaultValue: 0,
+            min: 0,
+            max: 80,
+            step: 0.2,
+          },
+          strokeColor: {
+            name: "Stroke color",
+            type: "color",
+            defaultValue: "#FFFFFF",
+          },
+
+          // background
+          bgColor: {
+            name: "Background color",
+            type: "color",
+            defaultValue: "#FFFFFF",
+          },
+          // showBackground: {
+          //   name: "Show background",
+          //   type: "boolean",
+          //   defaultValue: false,
+          // },
+
+          // actions
+          actions: {
+            name: "Actions",
+            type: "buttons",
+            defaultValue: null,
+            actions: [
+              {
+                name: "Save image",
+                action: () => {
+                  const filename = `${Date.now()}.png`;
+
+                  p.save(filename);
+                },
+              },
+              {
+                name: "Redraw",
+                action: () => p.draw(),
+              },
+            ],
           },
         },
-        document.body.querySelector("#sketch-controls")!
-      );
-
-      c.subscribe(() => p.draw());
+        presets: {
+          Default: {},
+          Minimal: {
+            radius: 5,
+            lineWeight: 1,
+          },
+          Dark: {
+            radius: 15,
+            lineWeight: 17,
+            pointsPerLine: 3,
+            lineColorPalette: [[1, "#000000"]],
+            strokeWidth: 0.8,
+            strokeColor: "#FFFFFF",
+            bgColor: "#000000",
+          },
+          Scribble: {
+            radius: 8,
+            lineWeight: 3,
+            pointsPerLine: 20,
+            lineColorPalette: [
+              [1, "#FFA200"],
+              [0.3, "#000000"],
+            ],
+            strokeWidth: 0,
+            strokeColor: "#FFFFFF",
+            bgColor: "#FFFFFF",
+          },
+        },
+        defaultPreset: urlParams.preset ?? "Default",
+      });
 
       p.preload = async () => {
         // font = p.loadFont("/public/fonts/Atop.ttf");
@@ -292,7 +290,7 @@ import Sketch from "../../../layouts/Sketch.astro";
 
       p.setup = () => {
         p.noLoop();
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         p.colorMode(p.HSB);
 
         c.init();

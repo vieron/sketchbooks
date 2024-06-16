@@ -5,18 +5,22 @@ import NumberControl from "./control-types/Number";
 import RangeControl from "./control-types/Range";
 import TextControl from "./control-types/Text";
 import ButtonControl from "./control-types/Button";
+import ButtonsControl from "./control-types/Buttons";
 import type { ControlDef, ControlsDef, PresetsDef } from "./types";
 import ColorPaletteControl from "./control-types/ColorPalette";
 import Presets from "./Presets";
 import SelectControl from "./control-types/Select";
+import { element } from "./utils";
 
 type SubscribeFn = (value: Record<string, any>) => void;
 
-type ControlsOptions<Defs extends ControlsDef> = {
+export type ControlsOptions<Defs extends ControlsDef> = {
   controls: Defs;
   presets?: PresetsDef<Defs>;
-  defaultPresset?: keyof PresetsDef<Defs>;
+  defaultPreset?: PresetName<Defs> | string;
 };
+
+export type PresetName<Defs extends ControlsDef> = keyof PresetsDef<Defs>;
 
 export default class Controls<C extends ControlsDef> {
   private runtimeDef: C;
@@ -35,13 +39,13 @@ export default class Controls<C extends ControlsDef> {
   private presets: Presets<C> = {} as Presets<C>;
 
   constructor(
-    { controls, presets = {}, defaultPresset }: ControlsOptions<C>,
+    { controls, presets = {}, defaultPreset }: ControlsOptions<C>,
     el: HTMLElement
   ) {
     this.originalDef = this.runtimeDef = controls;
     this.presetDefs = presets;
-    this.presets = new Presets(presets ?? {});
-    this.defaultPreset = defaultPresset;
+    this.presets = new Presets(presets ?? {}, defaultPreset);
+    this.defaultPreset = defaultPreset;
     this.el = el;
   }
 
@@ -69,6 +73,8 @@ export default class Controls<C extends ControlsDef> {
         return new BooleanControl(def);
       case "button":
         return new ButtonControl(def);
+      case "buttons":
+        return new ButtonsControl(def);
       case "select":
         return new SelectControl(def);
 
@@ -83,10 +89,16 @@ export default class Controls<C extends ControlsDef> {
   };
 
   private loadPreset(preset: keyof PresetsDef<C>): void {
+    const presetDef = this.presetDefs[preset];
+
+    if (!presetDef) {
+      throw new Error(
+        `Preset named "${preset}" does not match any existing preset`
+      );
+    }
+
     // destroy existing controls
     Object.values(this.controls).forEach((control) => control.destroy());
-
-    const presetDef = this.presetDefs[preset];
 
     // override default values of control definitions
     this.runtimeDef = Object.entries(this.originalDef).reduce(

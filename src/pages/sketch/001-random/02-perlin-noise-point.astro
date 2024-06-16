@@ -6,9 +6,9 @@ import Sketch from "../../../layouts/Sketch.astro";
   <script>
     import "p5";
 
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         //   p.frameRate(4);
       };
 

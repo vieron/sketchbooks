@@ -6,6 +6,7 @@ export type ControlDef =
   | ColorPaletteControlDef
   | BooleanControlDef
   | ButtonControlDef
+  | ButtonsControlDef
   | SelectControlDef;
 
 export type ControlsDef = Record<string, ControlDef>;
@@ -59,6 +60,11 @@ export interface BooleanControlDef extends ControlDefBase<boolean> {
 export interface ButtonControlDef extends ControlDefBase<null> {
   type: "button";
   action: () => void;
+}
+
+export interface ButtonsControlDef extends ControlDefBase<null> {
+  type: "buttons";
+  actions: { name: string; action: () => void }[];
 }
 
 type Preset<Controls extends ControlsDef> = Partial<{

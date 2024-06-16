@@ -16,7 +16,7 @@ export default class RangeControl extends Control<RangeControlDef> {
     const slider = element("input", {
       type: "range",
       className:
-        "w-3/4 h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer range-lg",
+        "w-4/6 h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer range-lg",
       value: "" + controlValue,
       min:
         typeof def.min !== "undefined"
@@ -38,7 +38,7 @@ export default class RangeControl extends Control<RangeControlDef> {
     const input = element("input", {
       type: "number",
       className:
-        "w-1/4 bg-slate-700 border border-slate-900 text-slate-300 text-xs rounded-md focus:ring-blue-500 focus:border-slate-400 block w-full pl-2 pr-1 py-1",
+        "w-2/6 bg-slate-700 border border-slate-900 shadow-inner text-slate-300 text-xs rounded-md focus:ring-blue-500 focus:border-slate-400 block w-full pl-2 pr-1 py-1",
       value: "" + controlValue,
       min: "" + def.min,
       max: "" + def.max,

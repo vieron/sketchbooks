@@ -5,13 +5,13 @@ import Sketch from "../../../layouts/Sketch.astro";
 <Sketch title="004 Flow fields">
   <script>
     import "p5";
-    window.sketch = (p) => {
+    window.sketch = (p, container) => {
       const noiseScale = 0.0002;
       const timeNoiseScale = 0.000009;
 
       p.setup = () => {
         p.colorMode(p.HSB);
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(container.clientWidth, container.clientHeight);
         // frameRate(20);
         p.angleMode(p.RADIANS);
       };
