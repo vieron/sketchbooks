@@ -27,10 +27,8 @@ const { title } = Astro.props;
       }
     }
 
-    const sketch = new Sketch(window.sketch ?? (() => {}));
-
     window.addEventListener("DOMContentLoaded", () => {
-      sketch.init();
+      new Sketch(window.sketch ?? (() => {}));
     });
   </script>
 </Layout>
